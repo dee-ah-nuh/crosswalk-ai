@@ -168,92 +168,106 @@ def generate_create_table_sql(mappings, table_name):
     return "\n".join(sql_lines)
 
 def generate_insert_mapping_sql(mappings, table_name):
-    """Generate INSERT statements for crosswalk configuration table - this is the critical ETL foundation"""
+    """Generate INSERT VALUES exactly matching the Excel formula logic for crosswalk configuration"""
     
     sql_lines = [
-        f"-- INSERT statements for crosswalk.configuration table",
-        f"-- This crosswalk data is used to build all ETL processes", 
+        f"-- Crosswalk INSERT VALUES - Exact Excel Formula Logic",
         f"-- Generated at: {datetime.now().isoformat()}",
+        f"-- This matches your Excel =IF(A3=...) formula for 'Output DML for Crosswalk'",
         f"",
-        f"-- Clear existing crosswalk configuration for this client/file group",
-        f"DELETE FROM crosswalk.configuration ",
-        f"WHERE client_id = '{mappings[0].client_id if mappings else 'UNKNOWN'}'",
-        f"  AND file_group = '{mappings[0].file_group_name if mappings else 'UNKNOWN'}';",
-        f"",
-        f"-- Insert crosswalk configuration mappings",
+        f"INSERT INTO {table_name} VALUES"
     ]
     
-    for mapping in mappings:
-        if mapping.skipped_flag:
-            continue
-            
-        # Build the INSERT statement for each mapping
-        client_id = mapping.client_id
-        source_column = mapping.source_column_name or 'NULL'
-        file_group = mapping.file_group_name or 'UNKNOWN'
-        mcdm_column = mapping.mcdm_column_name or 'NULL' 
-        mcdm_table = mapping.mcdm_table or 'UNKNOWN'
-        
-        # Build transformation logic
-        transform_logic = "NULL"
-        if mapping.source_column_formatting:
-            transform_logic = f"'{mapping.source_column_formatting}'"
-        elif mapping.mcdm_column_name:
-            transform_logic = f"'{source_column}'"
-            
-        # Determine data type
-        data_type = mapping.custom_data_type or mapping.inferred_data_type or 'VARCHAR(255)'
-        
-        # Provider file group flag (Feature 2)
-        provider_flag = mapping.provider_file_group or 'NULL'
-        
-        # Multi-table support (Feature 1)
-        target_tables = mapping.target_tables or f"'{mcdm_table}'"
-        
-        # Version and reuse info (Feature 3)
-        version = mapping.crosswalk_version or '1.0'
-        parent_mapping = mapping.parent_mapping_id or 'NULL'
-        reuse_client = mapping.reuse_from_client or 'NULL'
-        
-        # Join information (Feature 5)
-        join_key = mapping.join_key_column or 'NULL'
-        join_table = mapping.join_table or 'NULL'
-        join_type = mapping.join_type or 'INNER'
-        
-        # MCS review status (Feature 7)
-        mcs_required = 'TRUE' if mapping.mcs_review_required else 'FALSE'
-        mcs_status = mapping.mcs_review_status or 'PENDING'
-        
-        # Completion status
-        completion_status = mapping.completion_status or 'DRAFT'
-        
-        insert_sql = f"""INSERT INTO crosswalk.configuration (
-    client_id, source_column_name, file_group_name, 
-    mcdm_column_name, mcdm_table_name, data_type,
-    transformation_logic, provider_file_group, target_tables,
-    crosswalk_version, parent_mapping_id, reuse_from_client,
-    join_key_column, join_table, join_type,
-    mcs_review_required, mcs_review_status, completion_status,
-    created_at, updated_at
-) VALUES (
-    '{client_id}', '{source_column}', '{file_group}',
-    {'NULL' if mcdm_column == 'NULL' else f"'{mcdm_column}'"}, '{mcdm_table}', '{data_type}',
-    {transform_logic}, {'NULL' if provider_flag == 'NULL' else f"'{provider_flag}'"}, {target_tables},
-    '{version}', {parent_mapping}, {'NULL' if reuse_client == 'NULL' else f"'{reuse_client}'"},
-    {'NULL' if join_key == 'NULL' else f"'{join_key}'"}, {'NULL' if join_table == 'NULL' else f"'{join_table}'"}, '{join_type}',
-    {mcs_required}, '{mcs_status}', '{completion_status}',
-    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-);"""
-        
-        sql_lines.append(insert_sql)
-        sql_lines.append("")
+    value_clauses = []
     
-    sql_lines.extend([
-        f"-- Summary: {len([m for m in mappings if not m.skipped_flag])} crosswalk mappings inserted",
-        f"-- These mappings will be used by ETL processes to transform source data",
-        f"-- Run this script in your Snowflake environment to update crosswalk configuration",
-        ""
-    ])
+    for mapping in mappings:
+        # Excel formula: IF(A3="","", ...)
+        A3 = mapping.source_column_name or ""  # Source column name
+        if A3 == "":
+            continue  # Skip empty rows like Excel
+        
+        # Map database fields to Excel columns based on your formula
+        B3 = mapping.source_column_order if mapping.source_column_order is not None else "NULL"  # Source column order (number)
+        C3 = mapping.data_profile_info or ""  # Description (gets double quoted)
+        D3 = mapping.client_id or ""  # Client ID
+        E3 = mapping.in_model or ""  # MCDM table or status
+        F3 = mapping.in_model or ""  # in_model flag
+        G3 = mapping.mcdm_column_name or ""  # MCDM column name
+        H3 = mapping.custom_field_type or ""  # Custom field type
+        N3 = "NULL"  # Some numeric field (placeholder)
+        O3 = mapping.mcs_review_required or False  # Boolean field
+        P3 = mapping.mcs_review_required or False  # Boolean field (reusing for now)
+        R3 = mapping.source_column_formatting or ""  # Additional field
+        S3 = mapping.provider_file_group or ""  # Additional field
+        T3 = mapping.version_notes or ""  # Additional field
+        
+        # Excel logic: IF(E3="NOT USED", [first format], [second format])
+        if E3 == "NOT USED":
+            # First format: (A3, D3, B3, C3, NULL,NULL,NULL,NULL,NULL, P3, O3, S3, T3)
+            s3_val = "NULL" if S3 == "" else f"'{S3}'"
+            t3_val = "NULL" if T3 == "" else f"'{T3}'"
+            value_clause = f"('{A3}','{D3}',{B3},\"\"\"{C3}\"\"\",NULL,NULL,NULL,NULL,NULL,"
+            value_clause += f"{'TRUE' if P3 else 'NULL'},"
+            value_clause += f"{'TRUE' if O3 else 'NULL'},"
+            value_clause += f"{s3_val},"
+            value_clause += f"{t3_val})"
+        else:
+            # Main format matching your Excel formula exactly
+            value_clause = f"('{A3}',"
+            
+            # IF(ISBLANK(D3),"NULL","'"&D3&"'")
+            d3_val = "NULL" if D3 == "" else f"'{D3}'"
+            value_clause += f"{d3_val},"
+            
+            # IF(ISBLANK(B3),"NULL",B3)  
+            value_clause += f"{'NULL' if B3 == 'NULL' else B3},"
+            
+            # IF(ISBLANK(C3),"NULL","'"""&C3&"""'")
+            c3_val = "NULL" if C3 == "" else f'"""{C3}"""'
+            value_clause += f"{c3_val},"
+            
+            # G3 (MCDM column)
+            value_clause += f"'{G3}',"
+            
+            # E3 (MCDM table/status)
+            value_clause += f"'{E3}',"
+            
+            # IF(N3="","NULL",N3)
+            value_clause += f"{N3},"
+            
+            # IF(F3="Y","NULL","'"&H3&"'")
+            h3_val = "NULL" if F3 == "Y" else f"'{H3}'"
+            value_clause += f"{h3_val},"
+            
+            # IF(R3="","NULL","'"&R3&"'")
+            r3_val = "NULL" if R3 == "" else f"'{R3}'"
+            value_clause += f"{r3_val},"
+            
+            # IF(P3=TRUE,"TRUE","NULL")
+            value_clause += f"{'TRUE' if P3 else 'NULL'},"
+            
+            # IF(O3=TRUE,"TRUE","NULL")  
+            value_clause += f"{'TRUE' if O3 else 'NULL'},"
+            
+            # IF(S3="","NULL","'"&S3&"'")
+            s3_val = "NULL" if S3 == "" else f"'{S3}'"
+            value_clause += f"{s3_val},"
+            
+            # IF(T3="","NULL","'"&T3&"'")
+            t3_val = "NULL" if T3 == "" else f"'{T3}'"
+            value_clause += f"{t3_val})"
+        
+        value_clauses.append(value_clause)
+    
+    # Join all VALUE clauses with commas (like dragging down Excel formula)
+    if value_clauses:
+        sql_lines.extend([",\n".join(value_clauses)])
+        sql_lines.append(";")
+        sql_lines.append("")
+        sql_lines.append(f"-- {len(value_clauses)} crosswalk mappings generated")
+        sql_lines.append("-- Each row matches your Excel formula: =IF(A3=\"\",...)")
+    else:
+        sql_lines.append("-- No valid mappings found")
     
     return "\n".join(sql_lines)
 
