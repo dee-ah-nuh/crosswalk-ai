@@ -57,3 +57,4 @@ externalPort = 80
 [deployment]
 build = ["sh", "-c", "crosswalk-ai run "]
 deploymentTarget = "cloudrun"
+run = ["sh", "-c", "crosswalk-ai run "]
