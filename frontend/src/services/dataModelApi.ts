@@ -223,6 +223,3 @@ class DataModelApiService {
 
 // Export singleton instance
 export const dataModelApi = new DataModelApiService();
-
-// Export types for use in components
-export type { DataModelField, ValidationResult, FieldSuggestion, FieldInfo };
