@@ -247,7 +247,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onChange={(e) => setFilters({...filters, showIncompleteOnly: e.target.checked})}
                   className="rounded border-gray-600"
                 />
-                <label htmlFor="incomplete-only" className="text-sm text-gray-900">
+                <label htmlFor="incomplete-only" className="text-sm text-white">
                   Show Incomplete Only
                 </label>
               </div>
@@ -260,7 +260,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onChange={(e) => setFilters({...filters, showMcsReviewOnly: e.target.checked})}
                   className="rounded border-gray-600"
                 />
-                <label htmlFor="mcs-review" className="text-sm text-gray-900">
+                <label htmlFor="mcs-review" className="text-sm text-white">
                   <i className="fas fa-flag text-orange-600 mr-1"></i>
                   MCS Review
                 </label>
@@ -268,19 +268,19 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
             </div>
             
             <div className="flex items-center space-x-2 text-sm">
-              <span className="text-gray-900 font-medium">Status:</span>
+              <span className="text-white font-medium">Status:</span>
               <div className="flex items-center space-x-3">
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-green-500 rounded-full mr-1.5"></div>
-                  <span className="text-gray-900">Mapped ({filteredData.filter(m => getStatusInfo(m).status === 'mapped').length})</span>
+                  <span className="text-white">Mapped ({filteredData.filter(m => getStatusInfo(m).status === 'mapped').length})</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-red-500 rounded-full mr-1.5"></div>
-                  <span className="text-gray-900">Incomplete ({filteredData.filter(m => getStatusInfo(m).status === 'incomplete').length})</span>
+                  <span className="text-white">Incomplete ({filteredData.filter(m => getStatusInfo(m).status === 'incomplete').length})</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-orange-600 rounded-full mr-1.5"></div>
-                  <span className="text-gray-900">MCS Review ({filteredData.filter(m => m.mcs_review_required).length})</span>
+                  <span className="text-white">MCS Review ({filteredData.filter(m => m.mcs_review_required).length})</span>
                 </div>
               </div>
             </div>
