@@ -1,0 +1,70 @@
+# Interactive Crosswalk & ETL Helper
+
+## Overview
+
+A production-grade data engineering tool designed to streamline the process of mapping source data columns to standardized data models. The application enables data engineers to upload CSV/Excel files or define schema-only column lists, create interactive mappings to predefined data model fields, validate data using regex rules, and export configurations in multiple formats (CSV, Excel, JSON, SQL). The system supports custom field creation, data transformation using a built-in DSL, and optional data warehouse integration for fetching sample data.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript for type safety and modern development practices
+- **Build Tool**: Vite for fast development and optimized production builds
+- **Styling**: Tailwind CSS for utility-first styling with custom design system
+- **Data Grid**: TanStack Table for spreadsheet-like interface with editable cells and advanced features
+- **State Management**: React hooks with custom data fetching hooks (`useProfiles`, `useCrosswalk`)
+- **Component Structure**: Modular components including ProjectSidebar, CrosswalkGrid, DetailPanel, RegexTester, FileUpload, and SchemaInput
+
+### Backend Architecture
+- **Framework**: FastAPI for high-performance API development with automatic OpenAPI documentation
+- **Database ORM**: SQLAlchemy with declarative models for type-safe database operations
+- **Routing**: Modular route organization with separate modules for profiles, crosswalk mappings, and exports
+- **File Processing**: pandas and openpyxl for robust CSV/Excel parsing and data inference
+- **Data Transformation**: Custom DSL engine for safe expression evaluation and validation
+
+### Data Storage Solutions
+- **Primary Database**: SQLite for local persistence and simplicity
+- **Schema Design**: Normalized relational schema with core entities:
+  - `data_model_fields`: Predefined target schema fields
+  - `source_profiles`: Project containers with metadata
+  - `source_columns`: Source data column definitions with sample values
+  - `crosswalk_mappings`: Column mapping configurations
+  - `regex_rules`: Validation rule definitions
+  - `warehouse_configs`: Optional data warehouse connection settings
+
+### Authentication and Authorization
+- **Current State**: No authentication implemented (internal tool assumption)
+- **CORS Configuration**: Configured for local development with specific origin allowlist
+- **Security Considerations**: Designed for internal network deployment with potential for future authentication integration
+
+### Data Processing Pipeline
+- **File Ingestion**: Multi-format support (CSV, XLSX, XLS) with automatic type inference
+- **Schema Processing**: Support for schema-only workflows without physical files
+- **Validation Engine**: Real-time regex validation with testing capabilities
+- **Transform Engine**: Safe DSL for data transformations with function validation
+- **Export Pipeline**: Multi-format output generation (CSV, Excel, JSON, SQL DDL/DML)
+
+## External Dependencies
+
+### Core Dependencies
+- **React Ecosystem**: React 18, TypeScript, Vite for modern frontend development
+- **Python Backend**: FastAPI, SQLAlchemy, pandas, openpyxl for robust data processing
+- **Styling and UI**: Tailwind CSS, Font Awesome icons, TanStack Table for professional interface
+
+### Optional Integrations
+- **Data Warehouse**: Snowflake connector for sample data fetching (feature-flagged)
+- **Database Flexibility**: Architecture supports migration from SQLite to PostgreSQL or other databases
+- **Export Formats**: Built-in support for CSV, Excel, JSON, and SQL export without external services
+
+### Development Tools
+- **Build and Bundling**: Vite with optimized chunk splitting and vendor separation
+- **Type Safety**: TypeScript configuration with strict mode and path mapping
+- **Code Organization**: Modular architecture with clear separation of concerns
+
+### Environment Configuration
+- **Development Server**: Built-in proxy configuration for API routing
+- **Production Deployment**: Static file serving with FastAPI backend
+- **Feature Toggles**: Environment-based configuration for optional features like warehouse connectivity
