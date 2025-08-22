@@ -9,7 +9,8 @@ import os
 
 from database import engine
 from models import Base
-from routes import profiles, crosswalk, exports
+from routes import profiles, exports
+from routes import crosswalk_new as crosswalk
 
 # Create FastAPI app
 app = FastAPI(

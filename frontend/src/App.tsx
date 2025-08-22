@@ -1,144 +1,156 @@
 import React, { useState, useEffect } from 'react';
-import ProjectSidebar from './components/ProjectSidebar';
-import CrosswalkGrid from './components/CrosswalkGrid';
-import DetailPanel from './components/DetailPanel';
-import { useProfiles } from './hooks/useProfiles';
-import { useCrosswalk } from './hooks/useCrosswalk';
-import { Profile } from './types';
+import CrosswalkTemplateGrid from './components/CrosswalkTemplateGrid';
+import { crosswalkApi, Client, FileGroup, CrosswalkSummary } from './services/crosswalkApi';
 
-const App: React.FC = () => {
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
-  const [selectedSourceColumn, setSelectedSourceColumn] = useState<any>(null);
-  
-  const { profiles, loading: profilesLoading, createProfile, refreshProfiles } = useProfiles();
-  const { 
-    mappings, 
-    loading: mappingsLoading, 
-    updateMappings, 
-    validationSummary,
-    refreshMappings 
-  } = useCrosswalk(selectedProfile?.id);
+function App() {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [fileGroups, setFileGroups] = useState<FileGroup[]>([]);
+  const [selectedClient, setSelectedClient] = useState<string>('');
+  const [selectedFileGroup, setSelectedFileGroup] = useState<string>('');
+  const [summary, setSummary] = useState<CrosswalkSummary | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  // Load initial data
   useEffect(() => {
-    refreshProfiles();
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [clientsData, fileGroupsData, summaryData] = await Promise.all([
+          crosswalkApi.getClients(),
+          crosswalkApi.getFileGroups(),
+          crosswalkApi.getSummary()
+        ]);
+        
+        setClients(clientsData);
+        setFileGroups(fileGroupsData);
+        setSummary(summaryData);
+        
+        // Auto-select first client if available
+        if (clientsData.length > 0 && !selectedClient) {
+          setSelectedClient(clientsData[0].client_id);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
+  // Update file groups when client changes
   useEffect(() => {
-    if (selectedProfile) {
-      refreshMappings();
-    }
-  }, [selectedProfile]);
+    const loadFileGroups = async () => {
+      if (selectedClient) {
+        try {
+          const fileGroupsData = await crosswalkApi.getFileGroups(selectedClient);
+          setFileGroups(fileGroupsData);
+          
+          // Auto-select first file group if available
+          if (fileGroupsData.length > 0) {
+            setSelectedFileGroup(fileGroupsData[0].file_group);
+          }
+        } catch (error) {
+          console.error('Error loading file groups:', error);
+        }
+      } else {
+        const allFileGroups = await crosswalkApi.getFileGroups();
+        setFileGroups(allFileGroups);
+      }
+    };
 
-  const handleProfileSelect = (profile: Profile) => {
-    setSelectedProfile(profile);
-    setSelectedSourceColumn(null);
-  };
-
-  const handleRowSelect = (mapping: any) => {
-    setSelectedSourceColumn(mapping);
-  };
-
-  const handleMappingsUpdate = async (updatedMappings: any[]) => {
-    if (selectedProfile) {
-      await updateMappings(updatedMappings);
-      await refreshMappings();
-    }
-  };
+    loadFileGroups();
+  }, [selectedClient]);
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <i className="fas fa-exchange-alt text-blue-600 text-xl"></i>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Interactive Crosswalk & ETL Helper
-            </h1>
-          </div>
-          
-          {selectedProfile && validationSummary && (
-            <div className="flex items-center space-x-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-600">Mapping Progress:</span>
-                <div className="w-32 bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${validationSummary.mapping_percentage}%` }}
-                  ></div>
-                </div>
-                <span className="font-medium text-gray-900">
-                  {validationSummary.mapping_percentage}%
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-1 text-green-600">
-                <i className="fas fa-check-circle"></i>
-                <span>{validationSummary.mapped_columns} mapped</span>
-              </div>
-              
-              <div className="flex items-center space-x-1 text-orange-600">
-                <i className="fas fa-exclamation-triangle"></i>
-                <span>{validationSummary.unmapped_columns} unmapped</span>
-              </div>
+      <div className="bg-white border-b shadow-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Interactive Crosswalk & ETL Helper</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage your data mapping templates with ease
+              </p>
             </div>
-          )}
+            
+            {summary && (
+              <div className="flex items-center space-x-6 text-sm">
+                <div className="text-center">
+                  <div className="text-lg font-semibold text-blue-600">{summary.total_mappings}</div>
+                  <div className="text-gray-500">Mappings</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-semibold text-green-600">{summary.total_clients}</div>
+                  <div className="text-gray-500">Clients</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-semibold text-purple-600">{summary.total_file_groups}</div>
+                  <div className="text-gray-500">File Groups</div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </header>
+        
+        {/* Filters */}
+        <div className="px-6 py-3 bg-gray-50 border-t">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">Client:</label>
+              <select
+                value={selectedClient}
+                onChange={(e) => setSelectedClient(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white min-w-[150px]"
+              >
+                <option value="">All Clients</option>
+                {clients.map(client => (
+                  <option key={client.client_id} value={client.client_id}>
+                    {client.client_id} ({client.mapping_count})
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">File Group:</label>
+              <select
+                value={selectedFileGroup}
+                onChange={(e) => setSelectedFileGroup(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white min-w-[150px]"
+              >
+                <option value="">All File Groups</option>
+                {fileGroups.map(fg => (
+                  <option key={fg.file_group} value={fg.file_group}>
+                    {fg.file_group} ({fg.mapping_count})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1"></div>
+            
+            {loading && (
+              <div className="flex items-center text-gray-500 text-sm">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                Loading...
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <div className="sidebar bg-white border-r border-gray-200 flex-shrink-0">
-          <ProjectSidebar
-            profiles={profiles}
-            selectedProfile={selectedProfile}
-            onProfileSelect={handleProfileSelect}
-            onCreateProfile={createProfile}
-            loading={profilesLoading}
-          />
-        </div>
-
-        {/* Center Grid */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {selectedProfile ? (
-            <CrosswalkGrid
-              profileId={selectedProfile.id}
-              mappings={mappings}
-              loading={mappingsLoading}
-              onMappingsUpdate={handleMappingsUpdate}
-              onRowSelect={handleRowSelect}
-              selectedRow={selectedSourceColumn}
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center bg-gray-50">
-              <div className="text-center">
-                <i className="fas fa-project-diagram text-gray-400 text-4xl mb-4"></i>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Select a Project
-                </h3>
-                <p className="text-gray-600 max-w-sm">
-                  Choose a project from the sidebar or create a new one to start mapping your data columns.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Detail Panel */}
-        {selectedProfile && (
-          <div className="detail-panel bg-white border-l border-gray-200 flex-shrink-0">
-            <DetailPanel
-              profile={selectedProfile}
-              selectedColumn={selectedSourceColumn}
-              validationSummary={validationSummary}
-              onRefresh={refreshMappings}
-            />
-          </div>
-        )}
+      <div className="flex-1 overflow-hidden">
+        <CrosswalkTemplateGrid
+          clientId={selectedClient || undefined}
+          fileGroup={selectedFileGroup || undefined}
+        />
       </div>
     </div>
   );
-};
+}
 
 export default App;
