@@ -21,6 +21,7 @@ const CrosswalkDetailPanel: React.FC<CrosswalkDetailPanelProps> = ({
     source_column_formatting: mapping.source_column_formatting || '',
     data_profile_info: mapping.data_profile_info || '',
     skipped_flag: mapping.skipped_flag || false,
+    custom_data_type: mapping.custom_data_type || '',
   });
 
   const handleSave = () => {
@@ -112,10 +113,27 @@ const CrosswalkDetailPanel: React.FC<CrosswalkDetailPanelProps> = ({
           >
             <option value="Y">Y</option>
             <option value="N">N</option>
-            <option value="U">U</option>
-            <option value="N/A">N/A</option>
           </select>
         </div>
+
+        {/* Custom Data Type - only show when In Model is N */}
+        {formData.in_model === 'N' && (
+          <div>
+            <label className="block text-sm font-medium text-white mb-1">
+              Data Type <span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.custom_data_type || ''}
+              onChange={(e) => setFormData({...formData, custom_data_type: e.target.value})}
+              placeholder="e.g. VARCHAR(50), INTEGER, DATE"
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Required when field is not in the model
+            </p>
+          </div>
+        )}
 
         {/* Source Column Formatting */}
         <div>
