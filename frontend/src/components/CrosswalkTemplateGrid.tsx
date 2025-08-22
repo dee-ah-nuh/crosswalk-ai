@@ -12,6 +12,7 @@ import {
 import { crosswalkApi, CrosswalkMapping } from '../services/crosswalkApi';
 import { dataModelApi, ValidationResult, FieldSuggestion } from '../services/dataModelApi';
 import SnowflakeExportModal from './SnowflakeExportModal';
+import CrosswalkDetailPanel from './CrosswalkDetailPanel';
 
 interface CrosswalkTemplateGridProps {
   clientId?: string;
@@ -338,7 +339,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
 
       {/* Detail Panel */}
       {selectedMapping && (
-        <DetailPanel
+        <CrosswalkDetailPanel
           mapping={selectedMapping}
           onUpdateMapping={(updates) => updateMapping(selectedMapping.id, updates)}
           onClose={() => setSelectedMapping(null)}
