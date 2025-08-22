@@ -77,6 +77,81 @@ async def get_crosswalk_data(
         "limit": limit
     }
 
+@router.post("/crosswalk/{mapping_id}/duplicate")
+async def duplicate_crosswalk_mapping(
+    mapping_id: int,
+    data: Dict[str, Any],
+    db: Session = Depends(get_db)
+):
+    """Duplicate a crosswalk mapping with new table assignment"""
+    
+    # Get the original mapping
+    original = db.execute(
+        text("SELECT * FROM crosswalk_template WHERE id = :id"),
+        {'id': mapping_id}
+    ).fetchone()
+    
+    if not original:
+        raise HTTPException(status_code=404, detail="Original mapping not found")
+    
+    # Create new mapping with duplicated data
+    new_table = data.get('mcdm_table', original[7])  # mcdm_table is column 7
+    
+    insert_query = """
+        INSERT INTO crosswalk_template (
+            client_id, source_column_order, source_column_name, file_group_name,
+            mcdm_column_name, in_model, mcdm_table, custom_field_type,
+            data_profile_info, profile_column_2, profile_column_3, profile_column_4,
+            profile_column_5, profile_column_6, source_column_formatting, skipped_flag,
+            additional_field_1, additional_field_2, additional_field_3, additional_field_4,
+            additional_field_5, additional_field_6, additional_field_7, additional_field_8,
+            created_at, updated_at
+        ) VALUES (
+            :client_id, :source_column_order, :source_column_name, :file_group_name,
+            :mcdm_column_name, :in_model, :mcdm_table, :custom_field_type,
+            :data_profile_info, :profile_column_2, :profile_column_3, :profile_column_4,
+            :profile_column_5, :profile_column_6, :source_column_formatting, :skipped_flag,
+            :additional_field_1, :additional_field_2, :additional_field_3, :additional_field_4,
+            :additional_field_5, :additional_field_6, :additional_field_7, :additional_field_8,
+            CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+        )
+        RETURNING id
+    """
+    
+    # Prepare data for new mapping
+    new_mapping_data = {
+        'client_id': original[1],
+        'source_column_order': original[2],
+        'source_column_name': original[3],
+        'file_group_name': original[4],
+        'mcdm_column_name': original[5],
+        'in_model': original[6],
+        'mcdm_table': new_table,
+        'custom_field_type': original[8],
+        'data_profile_info': original[9],
+        'profile_column_2': original[10],
+        'profile_column_3': original[11],
+        'profile_column_4': original[12],
+        'profile_column_5': original[13],
+        'profile_column_6': original[14],
+        'source_column_formatting': original[15],
+        'skipped_flag': original[16],
+        'additional_field_1': original[17],
+        'additional_field_2': original[18],
+        'additional_field_3': original[19],
+        'additional_field_4': original[20],
+        'additional_field_5': original[21],
+        'additional_field_6': original[22],
+        'additional_field_7': original[23],
+        'additional_field_8': original[24]
+    }
+    
+    result = db.execute(text(insert_query), new_mapping_data)
+    new_id = result.fetchone()[0]
+    db.commit()
+    
+    return {"success": True, "message": "Mapping duplicated successfully", "new_id": new_id}
+
 @router.put("/crosswalk/{mapping_id}")
 async def update_crosswalk_mapping(
     mapping_id: int,

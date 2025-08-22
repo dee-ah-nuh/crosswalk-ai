@@ -242,6 +242,22 @@ class CrosswalkApiService {
     
     return response.json();
   }
+
+  async duplicateMapping(id: number, newTable: string): Promise<{success: boolean; message: string; new_id: number}> {
+    const response = await fetch(`${API_BASE_URL}/crosswalk/${id}/duplicate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mcdm_table: newTable }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
 }
 
 export const crosswalkApi = new CrosswalkApiService();

@@ -81,6 +81,31 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
     }
   };
 
+  // Duplicate mapping to another table
+  const duplicateMapping = async (mapping: CrosswalkMapping) => {
+    const newTable = prompt('Enter the target table name for the duplicate mapping:', mapping.mcdm_table || '');
+    if (!newTable || newTable.trim() === '') return;
+    
+    try {
+      const result = await crosswalkApi.duplicateMapping(mapping.id, newTable.trim());
+      
+      // Add the new mapping to the local data
+      const newMapping: CrosswalkMapping = {
+        ...mapping,
+        id: result.new_id,
+        mcdm_table: newTable.trim(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      setData(prev => [...prev, newMapping]);
+      alert(`Successfully duplicated mapping to table "${newTable}"`);
+    } catch (err: any) {
+      console.error('Error duplicating mapping:', err);
+      alert('Failed to duplicate mapping: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   // Filter data based on search and filters
   const filteredData = useMemo(() => {
     let filtered = data;
@@ -295,6 +320,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
               data={filteredData} 
               onUpdateMapping={updateMapping}
               onSelectMapping={setSelectedMapping}
+              onDuplicateMapping={duplicateMapping}
               selectedMapping={selectedMapping}
               getStatusInfo={getStatusInfo}
             />
@@ -335,9 +361,10 @@ const CardsView: React.FC<{
   data: CrosswalkMapping[];
   onUpdateMapping: (id: number, updates: Partial<CrosswalkMapping>) => void;
   onSelectMapping: (mapping: CrosswalkMapping) => void;
+  onDuplicateMapping: (mapping: CrosswalkMapping) => void;
   selectedMapping: CrosswalkMapping | null;
   getStatusInfo: (mapping: CrosswalkMapping) => any;
-}> = ({ data, onUpdateMapping, onSelectMapping, selectedMapping, getStatusInfo }) => {
+}> = ({ data, onUpdateMapping, onSelectMapping, onDuplicateMapping, selectedMapping, getStatusInfo }) => {
   return (
     <div className="h-full overflow-auto p-6 bg-gray-900">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -356,10 +383,22 @@ const CardsView: React.FC<{
               {/* Card Header */}
               <div className="p-4 border-b border-gray-700">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-white text-sm leading-tight">
-                    {mapping.source_column_name || 'Untitled Column'}
-                  </h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  <div className="flex items-start space-x-2 flex-1">
+                    <h3 className="font-semibold text-white text-sm leading-tight flex-1">
+                      {mapping.source_column_name || 'Untitled Column'}
+                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDuplicateMapping(mapping);
+                      }}
+                      className="text-gray-400 hover:text-orange-400 transition-colors p-1 rounded hover:bg-gray-700"
+                      title="Duplicate to another table"
+                    >
+                      <i className="fas fa-copy text-xs"></i>
+                    </button>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ml-2 ${
                     status.status === 'mapped' ? 'bg-green-100 text-green-700' :
                     status.status === 'incomplete' ? 'bg-red-100 text-red-700' :
                     status.status === 'custom' ? 'bg-orange-100 text-orange-700' :
