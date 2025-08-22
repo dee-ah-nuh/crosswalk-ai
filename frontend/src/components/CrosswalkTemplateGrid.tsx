@@ -375,35 +375,6 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
         clientId={clientId}
         fileGroup={fileGroup}
       />
-
-      {/* MCS Review Approval Panel */}
-      <div className="bg-gray-800 border-t border-gray-700 px-6 py-2">
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-300">
-            <span className="font-medium text-green-400">127</span> Ready • 
-            <span className="font-medium text-yellow-400">23</span> Pending • 
-            <span className="font-medium text-red-400">5</span> Issues
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => alert('All mappings approved for production')}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700 flex items-center"
-            >
-              <i className="fas fa-check mr-1.5"></i>
-              Approve All
-            </button>
-            
-            <button
-              onClick={() => alert('Mappings sent back for revision')}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 flex items-center"
-            >
-              <i className="fas fa-times mr-1.5"></i>
-              Request Revisions
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
