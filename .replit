@@ -55,6 +55,6 @@ localPort = 8000
 externalPort = 80
 
 [deployment]
-build = ["sh", "-c", "npm install "]
+build = ["sh", "-c", "cd frontend && npm install && npm run build"]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "cd frontend && npm run preview -- --host 0.0.0.0 --port 5000"]
