@@ -64,14 +64,14 @@ function App() {
   }, [selectedClient]);
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-gray-900 border-b border-gray-700 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Interactive Crosswalk & ETL Helper</h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <h1 className="text-2xl font-bold text-white">Crosswalk AI</h1>
+              <p className="text-sm text-gray-300 mt-1">
                 Manage your data mapping templates with ease
               </p>
             </div>
@@ -80,15 +80,15 @@ function App() {
               <div className="flex items-center space-x-6 text-sm">
                 <div className="text-center">
                   <div className="text-lg font-semibold text-orange-600">{summary.total_mappings}</div>
-                  <div className="text-gray-500">Mappings</div>
+                  <div className="text-gray-300">Mappings</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg font-semibold text-green-600">{summary.total_clients}</div>
-                  <div className="text-gray-500">Clients</div>
+                  <div className="text-gray-300">Clients</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg font-semibold text-purple-600">{summary.total_file_groups}</div>
-                  <div className="text-gray-500">File Groups</div>
+                  <div className="text-gray-300">File Groups</div>
                 </div>
               </div>
             )}
@@ -96,14 +96,14 @@ function App() {
         </div>
         
         {/* Filters */}
-        <div className="px-6 py-3 bg-gray-50 border-t">
+        <div className="px-6 py-3 bg-gray-800 border-t border-gray-700">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-900">Client:</label>
+              <label className="text-sm font-medium text-white">Client:</label>
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white min-w-[150px]"
+                className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[150px]"
               >
                 <option value="">All Clients</option>
                 {clients.map(client => (
@@ -115,11 +115,11 @@ function App() {
             </div>
             
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-900">File Group:</label>
+              <label className="text-sm font-medium text-white">File Group:</label>
               <select
                 value={selectedFileGroup}
                 onChange={(e) => setSelectedFileGroup(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm bg-white min-w-[150px]"
+                className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[150px]"
               >
                 <option value="">All File Groups</option>
                 {fileGroups.map(fg => (

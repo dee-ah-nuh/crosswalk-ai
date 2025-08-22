@@ -65,17 +65,17 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-white">
             <i className="fas fa-database text-orange-600 mr-2"></i>
             Generate Snowflake SQL
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-200"
           >
             <i className="fas fa-times text-xl"></i>
           </button>
@@ -87,13 +87,13 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
           <div className="space-y-4 mb-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Export Type
                 </label>
                 <select
                   value={exportType}
                   onChange={(e) => setExportType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white"
                 >
                   <option value="CREATE_TABLE">CREATE TABLE</option>
                   <option value="INSERT_MAPPING">🎯 Crosswalk Configuration INSERTs (ETL Foundation)</option>
@@ -102,7 +102,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Table Name
                 </label>
                 <input
@@ -110,14 +110,14 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
                   value={tableName}
                   onChange={(e) => setTableName(e.target.value)}
                   placeholder="e.g., UPHP_CLAIMS_STAGING"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white"
                 />
               </div>
             </div>
 
-            <div className="bg-orange-50 p-4 rounded-lg">
-              <h3 className="font-medium text-orange-900 mb-2">Configuration Summary</h3>
-              <div className="text-sm text-orange-800 space-y-1">
+            <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
+              <h3 className="font-medium text-orange-400 mb-2">Configuration Summary</h3>
+              <div className="text-sm text-gray-300 space-y-1">
                 <p><strong>Client:</strong> {clientId}</p>
                 <p><strong>File Group:</strong> {fileGroup || 'All'}</p>
                 <p><strong>Export Type:</strong> {exportType === 'INSERT_MAPPING' ? 'Crosswalk Configuration INSERTs' : exportType}</p>
@@ -187,14 +187,14 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
           {/* SQL Output */}
           {generatedSQL && (
             <div className="flex-1 min-h-0">
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+              <label className="block text-sm font-medium text-white mb-2">
                 Generated SQL
               </label>
-              <div className="h-full border border-gray-300 rounded-md overflow-hidden">
+              <div className="h-full border border-gray-600 rounded-md overflow-hidden">
                 <textarea
                   value={generatedSQL}
                   readOnly
-                  className="w-full h-full p-3 font-mono text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full h-full p-3 font-mono text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white"
                   style={{ minHeight: '300px' }}
                 />
               </div>
@@ -203,11 +203,11 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="px-6 py-4 border-t border-gray-700 bg-gray-700">
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-md hover:bg-gray-600"
             >
               Close
             </button>
