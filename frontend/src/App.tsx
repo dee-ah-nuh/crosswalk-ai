@@ -7,8 +7,8 @@ function App() {
   const [fileGroups, setFileGroups] = useState<FileGroup[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [selectedFileGroup, setSelectedFileGroup] = useState<string>('');
-  const [selectedVersion, setSelectedVersion] = useState<string>('1.0');
-  const [selectedStream, setSelectedStream] = useState<string>('PEC');
+  const [selectedVersion, setSelectedVersion] = useState<string>('V00');
+  const [selectedStream, setSelectedStream] = useState<string>('S00');
   const [summary, setSummary] = useState<CrosswalkSummary | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -139,10 +139,10 @@ function App() {
                 onChange={(e) => setSelectedVersion(e.target.value)}
                 className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[100px]"
               >
-                <option value="1.0">1.0</option>
-                <option value="1.1">1.1</option>
-                <option value="2.0">2.0</option>
-                <option value="3.0">3.0</option>
+                <option value="V00">V00</option>
+                <option value="V01">V01</option>
+                <option value="V02">V02</option>
+                <option value="V03">V03</option>
               </select>
             </div>
             
@@ -153,10 +153,10 @@ function App() {
                 onChange={(e) => setSelectedStream(e.target.value)}
                 className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[100px]"
               >
-                <option value="PEC">PEC</option>
-                <option value="V00">V00</option>
-                <option value="MSR">MSR</option>
-                <option value="QHP">QHP</option>
+                <option value="S00">S00</option>
+                <option value="S02">S02</option>
+                <option value="S03">S03</option>
+                <option value="S04">S04</option>
               </select>
             </div>
 
