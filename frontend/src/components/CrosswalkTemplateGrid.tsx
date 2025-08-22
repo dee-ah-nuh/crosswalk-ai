@@ -11,10 +11,18 @@ import {
 } from '@tanstack/react-table';
 import { crosswalkApi, CrosswalkMapping } from '../services/crosswalkApi';
 import { dataModelApi, ValidationResult, FieldSuggestion } from '../services/dataModelApi';
+import SnowflakeExportModal from './SnowflakeExportModal';
 
 interface CrosswalkTemplateGridProps {
   clientId?: string;
   fileGroup?: string;
+}
+
+interface FilterOptions {
+  showIncompleteOnly: boolean;
+  showMcsReviewOnly: boolean;
+  completionStatus: string;
+  mcsReviewStatus: string;
 }
 
 const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({ 
@@ -29,6 +37,13 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
   const [selectedMapping, setSelectedMapping] = useState<CrosswalkMapping | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<FilterOptions>({
+    showIncompleteOnly: false,
+    showMcsReviewOnly: false,
+    completionStatus: 'all',
+    mcsReviewStatus: 'all'
+  });
+  const [showSnowflakeModal, setShowSnowflakeModal] = useState(false);
 
   // Fetch data
   useEffect(() => {
@@ -66,16 +81,40 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
     }
   };
 
-  // Filter data based on search
+  // Filter data based on search and filters
   const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    return data.filter(mapping => 
-      mapping.source_column_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mapping.mcdm_column_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mapping.file_group_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mapping.data_profile_info?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [data, searchTerm]);
+    let filtered = data;
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(mapping => 
+        mapping.source_column_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mapping.mcdm_column_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mapping.file_group_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mapping.data_profile_info?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Feature 8: Filter incomplete columns
+    if (filters.showIncompleteOnly) {
+      filtered = filtered.filter(mapping => {
+        const status = getStatusInfo(mapping);
+        return status.status === 'incomplete';
+      });
+    }
+    
+    // Filter MCS review required
+    if (filters.showMcsReviewOnly) {
+      filtered = filtered.filter(mapping => mapping.mcs_review_required);
+    }
+    
+    // Filter by completion status
+    if (filters.completionStatus !== 'all') {
+      filtered = filtered.filter(mapping => mapping.completion_status === filters.completionStatus);
+    }
+    
+    return filtered;
+  }, [data, searchTerm, filters]);
 
   // Get status info for a mapping
   const getStatusInfo = (mapping: CrosswalkMapping) => {
@@ -144,6 +183,15 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
             
             {/* View Mode Toggle */}
             <div className="flex items-center space-x-3">
+              {/* Feature 6: Snowflake Export */}
+              <button
+                onClick={() => setShowSnowflakeModal(true)}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center"
+              >
+                <i className="fas fa-download mr-1.5"></i>
+                Export SQL
+              </button>
+              
               <div className="flex rounded-lg border border-gray-300">
                 <button
                   onClick={() => setViewMode('cards')}
@@ -171,8 +219,9 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
             </div>
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex items-center space-x-4">
+          {/* Enhanced Search and Filters */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
             <div className="flex-1 max-w-md">
               <div className="relative">
                 <input
@@ -183,6 +232,36 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            {/* Feature 8: Advanced Filters */}
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="incomplete-only"
+                  checked={filters.showIncompleteOnly}
+                  onChange={(e) => setFilters({...filters, showIncompleteOnly: e.target.checked})}
+                  className="rounded border-gray-300"
+                />
+                <label htmlFor="incomplete-only" className="text-sm text-gray-700">
+                  Show Incomplete Only
+                </label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="mcs-review"
+                  checked={filters.showMcsReviewOnly}
+                  onChange={(e) => setFilters({...filters, showMcsReviewOnly: e.target.checked})}
+                  className="rounded border-gray-300"
+                />
+                <label htmlFor="mcs-review" className="text-sm text-gray-700">
+                  <i className="fas fa-flag text-orange-500 mr-1"></i>
+                  MCS Review
+                </label>
               </div>
             </div>
             
@@ -198,11 +277,12 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   <span className="text-gray-600">Incomplete ({filteredData.filter(m => getStatusInfo(m).status === 'incomplete').length})</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full mr-1.5"></div>
-                  <span className="text-gray-600">Custom ({filteredData.filter(m => getStatusInfo(m).status === 'custom').length})</span>
+                  <div className="w-3 h-3 bg-orange-400 rounded-full mr-1.5"></div>
+                  <span className="text-gray-600">MCS Review ({filteredData.filter(m => m.mcs_review_required).length})</span>
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
 
@@ -236,6 +316,14 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
           onClose={() => setSelectedMapping(null)}
         />
       )}
+
+      {/* Feature 6: Snowflake Export Modal */}
+      <SnowflakeExportModal
+        isOpen={showSnowflakeModal}
+        onClose={() => setShowSnowflakeModal(false)}
+        clientId={clientId}
+        fileGroup={fileGroup}
+      />
     </div>
   );
 };

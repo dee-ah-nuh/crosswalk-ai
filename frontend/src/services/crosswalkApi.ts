@@ -30,6 +30,40 @@ export interface CrosswalkMapping {
   additional_field_8: string | null;
   created_at: string;
   updated_at: string;
+  
+  // Feature 1 & 2: Multi-table and provider fields
+  target_tables?: string | null;
+  provider_file_group?: string | null;
+  is_multi_table?: boolean;
+  
+  // Feature 3: Version control
+  crosswalk_version?: string | null;
+  parent_mapping_id?: number | null;
+  reuse_from_client?: string | null;
+  version_notes?: string | null;
+  
+  // Feature 4: Data type inference
+  inferred_data_type?: string | null;
+  custom_data_type?: string | null;
+  data_type_source?: string | null;
+  
+  // Feature 5: Multi-file joins
+  source_file_name?: string | null;
+  join_key_column?: string | null;
+  join_table?: string | null;
+  join_type?: string | null;
+  
+  // Feature 7: MCS review
+  mcs_review_required?: boolean;
+  mcs_review_notes?: string | null;
+  mcs_review_status?: string | null;
+  mcs_reviewer?: string | null;
+  mcs_review_date?: string | null;
+  
+  // Additional tracking
+  complexity_score?: number | null;
+  business_priority?: string | null;
+  completion_status?: string | null;
 }
 
 export interface CrosswalkResponse {
@@ -159,6 +193,47 @@ class CrosswalkApiService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(searchData),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  // Feature 6: Snowflake SQL Generation
+  async generateSnowflakeSQL(exportData: {
+    client_id: string;
+    file_group?: string;
+    export_type: string;
+    table_name: string;
+    created_by?: string;
+  }): Promise<{sql_content: string; table_name: string; export_type: string; mapping_count: number}> {
+    const response = await fetch(`/api/snowflake/generate-sql`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(exportData),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  async getSnowflakeExports(client_id?: string): Promise<any[]> {
+    const urlParams = new URLSearchParams();
+    if (client_id) urlParams.append('client_id', client_id);
+    
+    const response = await fetch(`/api/snowflake/exports?${urlParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     
     if (!response.ok) {

@@ -9,7 +9,7 @@ import os
 
 from database import engine
 from models import Base
-from routes import profiles, exports, datamodel
+from routes import profiles, exports, datamodel, snowflake_export
 from routes import crosswalk_new as crosswalk
 
 # Create FastAPI app
@@ -33,6 +33,7 @@ app.include_router(profiles.router, prefix="/api")
 app.include_router(crosswalk.router, prefix="/api")
 app.include_router(exports.router, prefix="/api")
 app.include_router(datamodel.router)
+app.include_router(snowflake_export.router)
 
 @app.get("/api/health")
 async def health_check():
