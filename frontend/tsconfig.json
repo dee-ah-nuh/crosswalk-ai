@@ -41,16 +41,11 @@
     "exactOptionalPropertyTypes": false
   },
   "include": [
-    "src",
-    "vite.config.ts"
+    "src"
   ],
   "exclude": [
     "node_modules",
-    "dist"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
+    "dist",
+    "vite.config.ts"
   ]
 }
