@@ -235,7 +235,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
               </button>
               
               <button
-                onClick={() => alert('Submitted for MCS Review')}
+                onClick={() => window.location.href = '/mcs-review'}
                 className="px-3 py-1.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 flex items-center"
               >
                 <i className="fas fa-user-check mr-1.5"></i>

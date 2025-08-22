@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import UploadScreen from './components/UploadScreen';
 import CrosswalkTemplateGrid from './components/CrosswalkTemplateGrid';
+import MCSReviewScreen from './components/MCSReviewScreen';
 import { crosswalkApi, Client, FileGroup, CrosswalkSummary } from './services/crosswalkApi';
 
 function App() {
@@ -65,7 +69,8 @@ function App() {
     loadFileGroups();
   }, [selectedClient]);
 
-  return (
+  // Component to wrap crosswalk with filters
+  const CrosswalkWithFilters: React.FC = () => (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header */}
       <div className="bg-gray-900 border-b border-gray-700 shadow-sm">
@@ -182,6 +187,17 @@ function App() {
         />
       </div>
     </div>
+  );
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigation />} />
+        <Route path="/upload" element={<UploadScreen />} />
+        <Route path="/crosswalk" element={<CrosswalkWithFilters />} />
+        <Route path="/mcs-review" element={<MCSReviewScreen />} />
+      </Routes>
+    </Router>
   );
 }
 
