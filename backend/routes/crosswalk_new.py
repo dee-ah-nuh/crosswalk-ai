@@ -105,7 +105,7 @@ async def duplicate_crosswalk_mapping(
             raise HTTPException(status_code=404, detail="Original mapping not found")
         
         # Create new mapping with duplicated data
-        new_table = data.get('mcdm_table', original[6])  # mcdm_table is now column 6
+        new_table = data.get('mcdm_table', original[6])  # mcdm_table is index 6
         
         insert_query = """
             INSERT INTO crosswalk_template (
