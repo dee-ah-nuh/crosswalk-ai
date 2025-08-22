@@ -10,7 +10,7 @@ import os
 from database import engine
 from models import Base
 from routes import profiles, exports, datamodel, snowflake_export
-from routes import crosswalk_new as crosswalk
+from routes import crosswalk_new as crosswalk, auto_mapping
 
 # Create FastAPI app
 app = FastAPI(
@@ -34,6 +34,7 @@ app.include_router(crosswalk.router, prefix="/api")
 app.include_router(exports.router, prefix="/api")
 app.include_router(datamodel.router)
 app.include_router(snowflake_export.router)
+app.include_router(auto_mapping.router)
 
 @app.get("/api/health")
 async def health_check():
