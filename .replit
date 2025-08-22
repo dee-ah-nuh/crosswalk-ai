@@ -55,6 +55,6 @@ localPort = 8000
 externalPort = 80
 
 [deployment]
-build = ["sh", "-c", "crosswalk-ai run "]
+build = ["sh", "-c", "npm install "]
 deploymentTarget = "cloudrun"
-run = ["sh", "-c", "crosswalk-ai run "]
+run = ["sh", "-c", "npm run build"]
