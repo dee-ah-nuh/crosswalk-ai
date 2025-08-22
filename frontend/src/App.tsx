@@ -7,6 +7,8 @@ function App() {
   const [fileGroups, setFileGroups] = useState<FileGroup[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [selectedFileGroup, setSelectedFileGroup] = useState<string>('');
+  const [selectedVersion, setSelectedVersion] = useState<string>('1.0');
+  const [selectedStream, setSelectedStream] = useState<string>('PEC');
   const [summary, setSummary] = useState<CrosswalkSummary | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -129,6 +131,34 @@ function App() {
                 ))}
               </select>
             </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-white">Version:</label>
+              <select
+                value={selectedVersion}
+                onChange={(e) => setSelectedVersion(e.target.value)}
+                className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[100px]"
+              >
+                <option value="1.0">1.0</option>
+                <option value="1.1">1.1</option>
+                <option value="2.0">2.0</option>
+                <option value="3.0">3.0</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-white">Stream:</label>
+              <select
+                value={selectedStream}
+                onChange={(e) => setSelectedStream(e.target.value)}
+                className="border border-gray-600 rounded-md px-3 py-1 text-sm bg-gray-700 text-white min-w-[100px]"
+              >
+                <option value="PEC">PEC</option>
+                <option value="V00">V00</option>
+                <option value="MSR">MSR</option>
+                <option value="QHP">QHP</option>
+              </select>
+            </div>
 
             <div className="flex-1"></div>
             
@@ -147,6 +177,8 @@ function App() {
         <CrosswalkTemplateGrid
           clientId={selectedClient || undefined}
           fileGroup={selectedFileGroup || undefined}
+          version={selectedVersion}
+          stream={selectedStream}
         />
       </div>
     </div>

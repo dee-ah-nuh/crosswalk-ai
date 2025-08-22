@@ -17,6 +17,8 @@ import CrosswalkDetailPanel from './CrosswalkDetailPanel';
 interface CrosswalkTemplateGridProps {
   clientId?: string;
   fileGroup?: string;
+  version?: string;
+  stream?: string;
 }
 
 interface FilterOptions {
@@ -28,7 +30,9 @@ interface FilterOptions {
 
 const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({ 
   clientId, 
-  fileGroup 
+  fileGroup,
+  version,
+  stream
 }) => {
   const [data, setData] = useState<CrosswalkMapping[]>([]);
   const [loading, setLoading] = useState(false);
@@ -206,6 +210,8 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                 {filteredData.length} mappings
                 {clientId && ` • Client: ${clientId}`}
                 {fileGroup && ` • File Group: ${fileGroup}`}
+                {version && ` • Version: ${version}`}
+                {stream && ` • Stream: ${stream}`}
               </p>
             </div>
             
