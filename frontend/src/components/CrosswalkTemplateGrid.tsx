@@ -223,7 +223,23 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                 className="px-3 py-1.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 flex items-center"
               >
                 <i className="fas fa-download mr-1.5"></i>
-                Export SQL
+                Crosswalk SQL
+              </button>
+              
+              <button
+                onClick={() => alert('Export to Snowflake functionality')}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 flex items-center"
+              >
+                <i className="fas fa-cloud-upload-alt mr-1.5"></i>
+                Export to Snowflake
+              </button>
+              
+              <button
+                onClick={() => alert('Submitted for MCS Review')}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 flex items-center"
+              >
+                <i className="fas fa-user-check mr-1.5"></i>
+                MCS Review
               </button>
               
               <div className="flex rounded-lg border border-gray-600">
@@ -359,6 +375,42 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
         clientId={clientId}
         fileGroup={fileGroup}
       />
+
+      {/* MCS Review Approval Panel */}
+      <div className="bg-gray-800 border-t border-gray-700 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white">MCS Review Status</h3>
+            <p className="text-sm text-gray-300 mt-1">
+              Review and approve crosswalk mappings for production deployment
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => alert('All mappings approved for production')}
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center"
+            >
+              <i className="fas fa-check mr-2"></i>
+              Approve All
+            </button>
+            
+            <button
+              onClick={() => alert('Mappings sent back for revision')}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 flex items-center"
+            >
+              <i className="fas fa-times mr-2"></i>
+              Request Revisions
+            </button>
+            
+            <div className="text-sm text-gray-300">
+              <span className="font-medium text-green-400">127</span> Ready • 
+              <span className="font-medium text-yellow-400">23</span> Pending • 
+              <span className="font-medium text-red-400">5</span> Issues
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
