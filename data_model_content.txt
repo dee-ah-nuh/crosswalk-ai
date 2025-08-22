@@ -1,0 +1,172 @@
+EXTRACTED DATA MODEL TRAINING CONTENT
+==================================================
+
+SLIDE 1:
+  New Data Model Training – Session 1
+  Audience: AArete MCS
+
+SLIDE 2:
+  Necessity of Evolution: AArete has commenced a transformative journey with the creation of Payment Intelligence 2.0 (PI20), which necessitates transitioning from our longstanding enterprise claims data model for medical and RX to a more advanced version. This initiative is in line with our dedication to leveraging innovative solutions for effective healthcare data management and analysis.
+Transition to New Data Model: With over two years of devoted development, we are now integrating the new enterprise claims data model across our service lines. This key strategic move ensures a seamless transition of all client data, existing and new, to the updated model, thereby augmenting our analytics, insights, and the overall value we offer to our healthcare clients.
+Immediate Impact and Future Readiness: The adoption of the new data model is effective immediately for medical claims, while the transition for RX claims is expected by the end of 2024. Training is critical to equip our team with the necessary knowledge and competencies to efficiently manage this transition, uphold our service excellence, and meet the evolving needs of healthcare data analytics.
+  Introduction
+
+SLIDE 3:
+  Review Original Medical Claims Data Model
+Introduction to New Data Model
+Walkthrough New Schemas
+Custom Fields
+Walkthrough of New Tables
+Detailed Walkthrough of Key Differences
+Join Comparison between 2 Data Models
+SQL Script Adaptation Example
+Field Name changes
+VARCHAR Comparison Change
+How To Get Started in New Environment
+Support with Transition to New Platform
+
+SLIDE 4:
+  Training Objectives
+  Understand the Data Model Differences
+Recognize the differences between the various schemas
+Understand the new tables and how they differ from the prior model
+Distinguish the key differences between original and new data model
+Know how to get support during the transition process
+
+SLIDE 5:
+  Prior Medical Claims Data Model
+
+SLIDE 6:
+  New Medical Claims Data Model
+
+SLIDE 7:
+  New Schemas
+
+SLIDE 8:
+  Project team members will use the role PROD_[CLIENT_NAME]_PHI_ANALYTIC for their work
+This will give READ access to the PROD database of your client. 
+It will also give READ/WRITE access to PHI and NONPHI sandboxes. This means you can create tables.
+For most analysis, the tables in the CLEANSE schema will be the primary source.
+However, the CLAIM_LINE_AARETE table is only in the CURATED schema. You can join the CLAIM_LINE_AARETE table from CURATED to your CLAIM_LINE table in CLEANSE using the CLAIM_LINE_SID.
+  New Schemas
+
+SLIDE 9:
+  The curated layer remains consistent across all databases and clients, whereas the cleanse layer contains custom fields specific to each client.
+  Custom Fields
+  STATEMENT_DT is not a standard field in the CURATED layer. Therefore, you will not be able to select that field from that schema.
+
+SLIDE 10:
+  New Tables - Overview
+  In the New Data Model, a reduced number of tables are utilized, resulting in better query performance and fewer joins needed
+Each table will hold the below fields:
+DP_CREATE_TIMESTAMP
+DP_UPDATE_TIMESTAMP
+DP_RUN_ID
+
+SLIDE 11:
+  Claim Header
+  Diagnosis and procedure codes are now held at the header level, rather than their own respective tables.
+
+SLIDE 12:
+  In the new data model, we are keeping both the member data from the raw member files and the member data from the raw claim files. 
+If you are interested in member data that was sourced from the claim file data, join the MEMBER table to the CLAIM_HEADER table using the MEMBER_SID. If you need the member data sourced from the member file, join the MEMBER table to the CLAIM_HEADER table using the MEMBER_MBR_FILE_SID.
+Same is true for provider data. If you want provider data that was sourced from the claim file data, join the PROVIDER table to the CLAIM_HEADER table using the PROVIDER_[ROLE]_SID. If you need the provider data sourced from the provider file, join the PROVIDER table to the CLAIM_HEADER using PROVIDER_[ROLE]_PROV_FILE_SID.
+  MEMBER_SID and MEMBER_MBR_FILE_SID
+
+SLIDE 13:
+  Claim Line
+  In the updated model, rendering provider SID is in the claim line table.
+All other provider SIDs are now located in the claim header table.
+  CPT4 codes are now held at the line level, rather than its own respective table.
+
+SLIDE 14:
+  Member
+  Plan information is now in the member table.
+
+SLIDE 15:
+  Patient
+
+SLIDE 16:
+  Provider
+
+SLIDE 17:
+  These CPT4 fields used to be held in DIM_CPT4 table. They are now in the CLAIM_LINE_AARETE table
+  Claim Line AArete
+
+SLIDE 18:
+  New Tables and Join Summary
+  In the New Data Model, a reduced number of tables are utilized, resulting in better query performance and fewer joins needed
+DIM_DIAG, DIM_PROC, DIM_CLAIM_HEADER > CLAIM_HEADER table
+DIM_ELIGIBILITY, DIM_PLAN, DIM_MEMBER > MEMBER table
+DIM_CPT4, DIM_CLAIM_LINE, FACT_CLAIM_LINE > CLAIM_LINE table
+
+
+
+Please remember, CLAIM_LINE_AARETE is only present in the CURATED schema. So, while in most analysis you will use the tables in the CURATED schema, you will always have to get CLAIM_LINE_AARETE fields from the CURATED schema.
+
+SLIDE 19:
+  As you can observe, there are fewer joins in the new data model. Additionally, it's important to reiterate that RENDERING provider data is located at the line level, whereas all other provider types are situated at the claim level.
+Also, note that CLAIM_LINE_AARETE is coming from the CURATED schema; it does not exist in the cleanse schema.
+  Prior Data Model Joins VS New Data Model Joins
+
+SLIDE 20:
+  It’s essential to acknowledge that there have been alterations in field names between the previous data model and the new data model.
+Field name changes will be reflected in CLIENT crosswalks for any client that has been migrated from the prior data model to the new data model
+For any client that is transitioned there will be a client specific field name crosswalk located in the PHI SANDBOX schema for use when converting your existing code
+SELECT * FROM [CLIENT_ID]_PHI_SANDBOX.FIELD_NAME_CROSSWALK;
+To understand how NEW onboarded clients are mapped to the new data model, use the following query:
+SELECT * FROM CONFIGURATION.CROSSWALKWHERE CLIENT_ID = [CLIENT_ID];
+  Field Name Changes
+
+SLIDE 21:
+  SQL conversion from Prior to New data model
+  AAR_FINAL_STATUS_FLAG > DP_FINAL_STATUS_FLAG
+  The joins used are different
+
+As can be seen in this example, there have been changes in field names, table names, and table relationships.
+  Some field names have changed
+
+SLIDE 22:
+  Essential Functions for VARCHAR Comparison
+  If you include a field with a data type of VARCHAR, you NEED to use the UPPER() or LOWER() functions in your query.
+  The inclusion of 'UPPER' enabled us to precisely identify members with Medicare Line of Business. Alternatively, we could have utilized 'WHERE LOWER(MBR_PRODUCT_LINE_OF_BUSINESS) = 'medicare’. 
+In our prior data model, you did not have to use this function, but the new data model stores data in a case sensitive way, and it is critical to utilize UPPER or LOWER functions to get the proper result.
+
+SLIDE 23:
+  Steps for logging into PI Snowflake Instance
+Log in to VPN
+Log in to RDS
+Open up AArete PI Snowflake
+Click on ‘Sign in using Azure SSO’  
+Set Role to PROD_[CLIENT_NAME]_PHI_ANALYTIC
+  Role and Warehouse
+
+SLIDE 24:
+  Key Takeaways
+
+SLIDE 25:
+  How to Get Help
+  For support writing and converting SQL for the new data model, reach out to Meena Taneja’s team by emailing your request to pod1@aarete.com
+For any potential data-related issues, reach out to the IT Data Architecture and Engineering team by emailing your request to dae@aarete.atlassian.net
+
+SLIDE 26:
+
+SLIDE 27:
+  Appendix
+
+SLIDE 28:
+  In the new data model, fewer tables are utilized, with greater fields per table, resulting in fewer joins
+Attributes from DIM_DIAG, DIM_PROC, DIM_CLAIM_HEADER are now found in the CLAIM_HEADER table
+Attributes from DIM_ELIGIBILITY, DIM_PLAN, DIM_MEMBER are now found in the MEMBER table
+Attributes from DIM_CPT4, DIM_CLAIM_LINE, FACT_CLAIM_LINE are now found in the CLAIM_LINE table
+In the prior model, all provider SIDs were stored in the line level fact table. 
+In the new model, the rendering provider SID remains in the claim line table. All other provider SIDs are now found in the header level table.
+In the new data model, there are now two member sids and two provider sids (per role) in the header. The purpose is to keep both the data sourced from the raw member/enrollment/provider files and the member/enrollment/provider data sourced from the raw claim files.
+If you are interested in member data that was sourced from the claim file data, join the MEMBER table to the CLAIM_HEADER table using the MEMBER_SID. If you need the member data sourced from the member file, join the MEMBER table to the CLAIM_HEADER table using the MEMBER_MBR_FILE_SID.
+CLAIM_HEADER.MEMBER_SID=MEMBER.MEMBER_SID
+CLAIM_HEADER.MEMBER_MBR_FILE_SID=MEMBER.MEMBER_SID
+Same is true for provider data. If you want provider data that was sourced from the claim file data, join the PROVIDER table to the CLAIM_HEADER table using the PROVIDER_[ROLE]_SID. If you need the provider data sourced from the provider file, join the PROVIDER table to the CLAIM_HEADER using PROVIDER_[ROLE]_PROV_FILE_SID.
+CLAIM_HEADER.PROVIDER_[ROLE]_SID=PROVIDER.PROVIDER_SID (CLAIMS SOURCE)
+CLAIM_HEADER.PROVIDER_[ROLE]_PROV_FILE_SID=PROVIDER.PROVIDER_SID (PROVIDER FILE SOURCE)
+  Key Takeaways - Detail
+
