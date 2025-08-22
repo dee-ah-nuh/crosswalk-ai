@@ -9,7 +9,7 @@ import os
 
 from database import engine
 from models import Base
-from routes import profiles, exports
+from routes import profiles, exports, datamodel
 from routes import crosswalk_new as crosswalk
 
 # Create FastAPI app
@@ -32,6 +32,7 @@ app.add_middleware(
 app.include_router(profiles.router, prefix="/api")
 app.include_router(crosswalk.router, prefix="/api")
 app.include_router(exports.router, prefix="/api")
+app.include_router(datamodel.router)
 
 @app.get("/api/health")
 async def health_check():

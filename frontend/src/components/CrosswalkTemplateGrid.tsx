@@ -10,6 +10,7 @@ import {
   ColumnFiltersState,
 } from '@tanstack/react-table';
 import { crosswalkApi, CrosswalkMapping } from '../services/crosswalkApi';
+import { dataModelApi, ValidationResult, FieldSuggestion } from '../services/dataModelApi';
 
 interface CrosswalkTemplateGridProps {
   clientId?: string;
