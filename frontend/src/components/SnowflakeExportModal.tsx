@@ -70,7 +70,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            <i className="fas fa-database text-blue-600 mr-2"></i>
+            <i className="fas fa-database text-orange-600 mr-2"></i>
             Generate Snowflake SQL
           </h2>
           <button
@@ -87,13 +87,13 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
           <div className="space-y-4 mb-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Export Type
                 </label>
                 <select
                   value={exportType}
                   onChange={(e) => setExportType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 >
                   <option value="CREATE_TABLE">CREATE TABLE</option>
                   <option value="INSERT_MAPPING">🎯 Crosswalk Configuration INSERTs (ETL Foundation)</option>
@@ -102,7 +102,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Table Name
                 </label>
                 <input
@@ -110,14 +110,14 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
                   value={tableName}
                   onChange={(e) => setTableName(e.target.value)}
                   placeholder="e.g., UPHP_CLAIMS_STAGING"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
               </div>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-medium text-blue-900 mb-2">Configuration Summary</h3>
-              <div className="text-sm text-blue-800 space-y-1">
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <h3 className="font-medium text-orange-900 mb-2">Configuration Summary</h3>
+              <div className="text-sm text-orange-800 space-y-1">
                 <p><strong>Client:</strong> {clientId}</p>
                 <p><strong>File Group:</strong> {fileGroup || 'All'}</p>
                 <p><strong>Export Type:</strong> {exportType === 'INSERT_MAPPING' ? 'Crosswalk Configuration INSERTs' : exportType}</p>
@@ -148,7 +148,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
               <button
                 onClick={handleGenerate}
                 disabled={loading || !tableName.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
+                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
               >
                 {loading ? (
                   <>
@@ -187,14 +187,14 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
           {/* SQL Output */}
           {generatedSQL && (
             <div className="flex-1 min-h-0">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
                 Generated SQL
               </label>
               <div className="h-full border border-gray-300 rounded-md overflow-hidden">
                 <textarea
                   value={generatedSQL}
                   readOnly
-                  className="w-full h-full p-3 font-mono text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full h-full p-3 font-mono text-sm resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   style={{ minHeight: '300px' }}
                 />
               </div>

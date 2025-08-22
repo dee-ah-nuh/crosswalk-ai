@@ -79,7 +79,7 @@ function App() {
             {summary && (
               <div className="flex items-center space-x-6 text-sm">
                 <div className="text-center">
-                  <div className="text-lg font-semibold text-blue-600">{summary.total_mappings}</div>
+                  <div className="text-lg font-semibold text-orange-600">{summary.total_mappings}</div>
                   <div className="text-gray-500">Mappings</div>
                 </div>
                 <div className="text-center">
@@ -99,7 +99,7 @@ function App() {
         <div className="px-6 py-3 bg-gray-50 border-t">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">Client:</label>
+              <label className="text-sm font-medium text-gray-900">Client:</label>
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
@@ -115,7 +115,7 @@ function App() {
             </div>
             
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">File Group:</label>
+              <label className="text-sm font-medium text-gray-900">File Group:</label>
               <select
                 value={selectedFileGroup}
                 onChange={(e) => setSelectedFileGroup(e.target.value)}

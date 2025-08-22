@@ -146,8 +146,8 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center space-x-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="text-gray-600">Loading crosswalk data...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+          <span className="text-gray-900">Loading crosswalk data...</span>
         </div>
       </div>
     );
@@ -188,7 +188,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
               {/* Feature 6: Snowflake Export */}
               <button
                 onClick={() => setShowSnowflakeModal(true)}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center"
+                className="px-3 py-1.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 flex items-center"
               >
                 <i className="fas fa-download mr-1.5"></i>
                 Export SQL
@@ -199,7 +199,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onClick={() => setViewMode('cards')}
                   className={`px-3 py-1.5 text-sm font-medium rounded-l-lg ${
                     viewMode === 'cards'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-orange-600 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -210,7 +210,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1.5 text-sm font-medium rounded-r-lg border-l ${
                     viewMode === 'table'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-orange-600 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -231,7 +231,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   placeholder="Search columns, mappings, or descriptions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
                 <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               </div>
@@ -247,7 +247,7 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onChange={(e) => setFilters({...filters, showIncompleteOnly: e.target.checked})}
                   className="rounded border-gray-300"
                 />
-                <label htmlFor="incomplete-only" className="text-sm text-gray-700">
+                <label htmlFor="incomplete-only" className="text-sm text-gray-900">
                   Show Incomplete Only
                 </label>
               </div>
@@ -260,27 +260,27 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
                   onChange={(e) => setFilters({...filters, showMcsReviewOnly: e.target.checked})}
                   className="rounded border-gray-300"
                 />
-                <label htmlFor="mcs-review" className="text-sm text-gray-700">
-                  <i className="fas fa-flag text-orange-500 mr-1"></i>
+                <label htmlFor="mcs-review" className="text-sm text-gray-900">
+                  <i className="fas fa-flag text-orange-600 mr-1"></i>
                   MCS Review
                 </label>
               </div>
             </div>
             
             <div className="flex items-center space-x-2 text-sm">
-              <span className="text-gray-500">Status:</span>
+              <span className="text-gray-900 font-medium">Status:</span>
               <div className="flex items-center space-x-3">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-green-400 rounded-full mr-1.5"></div>
-                  <span className="text-gray-600">Mapped ({filteredData.filter(m => getStatusInfo(m).status === 'mapped').length})</span>
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-1.5"></div>
+                  <span className="text-gray-900">Mapped ({filteredData.filter(m => getStatusInfo(m).status === 'mapped').length})</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-red-400 rounded-full mr-1.5"></div>
-                  <span className="text-gray-600">Incomplete ({filteredData.filter(m => getStatusInfo(m).status === 'incomplete').length})</span>
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-1.5"></div>
+                  <span className="text-gray-900">Incomplete ({filteredData.filter(m => getStatusInfo(m).status === 'incomplete').length})</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-orange-400 rounded-full mr-1.5"></div>
-                  <span className="text-gray-600">MCS Review ({filteredData.filter(m => m.mcs_review_required).length})</span>
+                  <div className="w-3 h-3 bg-orange-600 rounded-full mr-1.5"></div>
+                  <span className="text-gray-900">MCS Review ({filteredData.filter(m => m.mcs_review_required).length})</span>
                 </div>
               </div>
             </div>
@@ -350,7 +350,7 @@ const CardsView: React.FC<{
               key={mapping.id}
               onClick={() => onSelectMapping(mapping)}
               className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border-2 ${
-                isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+                isSelected ? 'border-orange-600 ring-2 ring-orange-200' : 'border-gray-200'
               }`}
             >
               {/* Card Header */}
@@ -362,7 +362,7 @@ const CardsView: React.FC<{
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     status.status === 'mapped' ? 'bg-green-100 text-green-700' :
                     status.status === 'incomplete' ? 'bg-red-100 text-red-700' :
-                    status.status === 'custom' ? 'bg-blue-100 text-blue-700' :
+                    status.status === 'custom' ? 'bg-orange-100 text-orange-700' :
                     status.status === 'review' ? 'bg-yellow-100 text-yellow-700' :
                     status.status === 'skipped' ? 'bg-gray-100 text-gray-700' :
                     'bg-gray-100 text-gray-700'
@@ -373,7 +373,7 @@ const CardsView: React.FC<{
                 
                 {mapping.file_group_name && (
                   <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                    mapping.file_group_name === 'CLAIM' ? 'bg-blue-50 text-blue-700' :
+                    mapping.file_group_name === 'CLAIM' ? 'bg-orange-50 text-orange-700' :
                     mapping.file_group_name === 'CLAIM_LINE' ? 'bg-green-50 text-green-700' :
                     mapping.file_group_name === 'MEMBER' ? 'bg-purple-50 text-purple-700' :
                     mapping.file_group_name === 'PROVIDER' ? 'bg-orange-50 text-orange-700' :
@@ -389,7 +389,7 @@ const CardsView: React.FC<{
                 {mapping.mcdm_column_name && (
                   <div>
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Target Column</label>
-                    <p className="text-sm font-medium text-blue-600 mt-1">{mapping.mcdm_column_name}</p>
+                    <p className="text-sm font-medium text-orange-600 mt-1">{mapping.mcdm_column_name}</p>
                   </div>
                 )}
                 
@@ -482,7 +482,7 @@ const TableView: React.FC<{
               return (
                 <tr 
                   key={mapping.id} 
-                  className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-blue-50' : ''}`}
+                  className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-orange-50' : ''}`}
                   onClick={() => onSelectMapping(mapping)}
                 >
                   <td className="px-4 py-4 whitespace-nowrap">
@@ -491,7 +491,7 @@ const TableView: React.FC<{
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                      mapping.file_group_name === 'CLAIM' ? 'bg-blue-100 text-blue-800' :
+                      mapping.file_group_name === 'CLAIM' ? 'bg-orange-100 text-orange-800' :
                       mapping.file_group_name === 'CLAIM_LINE' ? 'bg-green-100 text-green-800' :
                       mapping.file_group_name === 'MEMBER' ? 'bg-purple-100 text-purple-800' :
                       mapping.file_group_name === 'PROVIDER' ? 'bg-orange-100 text-orange-800' :
@@ -501,7 +501,7 @@ const TableView: React.FC<{
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-blue-600">{mapping.mcdm_column_name || 'Not mapped'}</div>
+                    <div className="text-sm font-medium text-orange-600">{mapping.mcdm_column_name || 'Not mapped'}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {mapping.mcdm_table || 'N/A'}
@@ -510,7 +510,7 @@ const TableView: React.FC<{
                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                       status.status === 'mapped' ? 'bg-green-100 text-green-800' :
                       status.status === 'incomplete' ? 'bg-red-100 text-red-800' :
-                      status.status === 'custom' ? 'bg-blue-100 text-blue-800' :
+                      status.status === 'custom' ? 'bg-orange-100 text-orange-800' :
                       status.status === 'review' ? 'bg-yellow-100 text-yellow-800' :
                       status.status === 'skipped' ? 'bg-gray-100 text-gray-800' :
                       'bg-gray-100 text-gray-800'
@@ -519,7 +519,7 @@ const TableView: React.FC<{
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900">Edit</button>
+                    <button className="text-orange-600 hover:text-orange-900">Edit</button>
                   </td>
                 </tr>
               );
@@ -579,26 +579,26 @@ const DetailPanel: React.FC<{
       <div className="flex-1 overflow-auto p-6 space-y-6">
         {/* Source Column */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Source Column Name
           </label>
           <input
             type="text"
             value={formData.source_column_name || ''}
             onChange={(e) => setFormData({ ...formData, source_column_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           />
         </div>
 
         {/* File Group */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             File Group
           </label>
           <select
             value={formData.file_group_name || ''}
             onChange={(e) => setFormData({ ...formData, file_group_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="">Select file group...</option>
             <option value="CLAIM">CLAIM</option>
@@ -617,7 +617,7 @@ const DetailPanel: React.FC<{
             </label>
             <button
               onClick={getSuggestions}
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="text-sm text-orange-600 hover:text-orange-800"
             >
               Get Suggestions
             </button>
@@ -626,7 +626,7 @@ const DetailPanel: React.FC<{
             type="text"
             value={formData.mcdm_column_name || ''}
             onChange={(e) => setFormData({ ...formData, mcdm_column_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           />
           
           {suggestions.length > 0 && (
@@ -651,13 +651,13 @@ const DetailPanel: React.FC<{
 
         {/* IN_MODEL */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             In Model
           </label>
           <select
             value={formData.in_model || 'Y'}
             onChange={(e) => setFormData({ ...formData, in_model: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="Y">Y - Include in model</option>
             <option value="N">N - Custom field</option>
@@ -668,28 +668,28 @@ const DetailPanel: React.FC<{
 
         {/* Source Formatting */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Source Column Formatting
           </label>
           <textarea
             value={formData.source_column_formatting || ''}
             onChange={(e) => setFormData({ ...formData, source_column_formatting: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-sm"
             placeholder="e.g., UPPER(column_name)"
           />
         </div>
 
         {/* Data Profile Info */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Data Profile Info
           </label>
           <textarea
             value={formData.data_profile_info || ''}
             onChange={(e) => setFormData({ ...formData, data_profile_info: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
             placeholder="Description of data profile or sample values..."
           />
         </div>
@@ -701,7 +701,7 @@ const DetailPanel: React.FC<{
             id="skipped"
             checked={formData.skipped_flag || false}
             onChange={(e) => setFormData({ ...formData, skipped_flag: e.target.checked })}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
           />
           <label htmlFor="skipped" className="ml-2 block text-sm text-gray-900">
             Skip this field
@@ -720,7 +720,7 @@ const DetailPanel: React.FC<{
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-md hover:bg-orange-700"
           >
             Save Changes
           </button>
