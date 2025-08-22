@@ -98,8 +98,10 @@ const CrosswalkTemplateGrid: React.FC<CrosswalkTemplateGridProps> = ({
     // Feature 8: Filter incomplete columns
     if (filters.showIncompleteOnly) {
       filtered = filtered.filter(mapping => {
-        const status = getStatusInfo(mapping);
-        return status.status === 'incomplete';
+        const inModel = mapping.in_model?.toUpperCase();
+        const hasMcdm = mapping.mcdm_column_name?.trim();
+        const isSkipped = mapping.skipped_flag;
+        return (inModel === 'Y' && !hasMcdm) && !isSkipped;
       });
     }
     

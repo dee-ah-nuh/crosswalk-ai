@@ -168,52 +168,92 @@ def generate_create_table_sql(mappings, table_name):
     return "\n".join(sql_lines)
 
 def generate_insert_mapping_sql(mappings, table_name):
-    """Generate INSERT SELECT SQL for data transformation"""
+    """Generate INSERT statements for crosswalk configuration table - this is the critical ETL foundation"""
     
     sql_lines = [
-        f"-- Snowflake INSERT SELECT generated from crosswalk mappings",
+        f"-- INSERT statements for crosswalk.configuration table",
+        f"-- This crosswalk data is used to build all ETL processes", 
         f"-- Generated at: {datetime.now().isoformat()}",
         f"",
-        f"INSERT INTO {table_name} (",
+        f"-- Clear existing crosswalk configuration for this client/file group",
+        f"DELETE FROM crosswalk.configuration ",
+        f"WHERE client_id = '{mappings[0].client_id if mappings else 'UNKNOWN'}'",
+        f"  AND file_group = '{mappings[0].file_group_name if mappings else 'UNKNOWN'}';",
+        f"",
+        f"-- Insert crosswalk configuration mappings",
     ]
     
-    # Column list
-    target_columns = []
-    source_expressions = []
-    
     for mapping in mappings:
-        if not mapping.mcdm_column_name or mapping.skipped_flag:
+        if mapping.skipped_flag:
             continue
             
-        target_columns.append(f"    {mapping.mcdm_column_name}")
+        # Build the INSERT statement for each mapping
+        client_id = mapping.client_id
+        source_column = mapping.source_column_name or 'NULL'
+        file_group = mapping.file_group_name or 'UNKNOWN'
+        mcdm_column = mapping.mcdm_column_name or 'NULL' 
+        mcdm_table = mapping.mcdm_table or 'UNKNOWN'
         
-        # Build source expression
-        source_col = mapping.source_column_name
-        
-        # Apply formatting if specified
+        # Build transformation logic
+        transform_logic = "NULL"
         if mapping.source_column_formatting:
-            source_expr = mapping.source_column_formatting
-        else:
-            source_expr = source_col
+            transform_logic = f"'{mapping.source_column_formatting}'"
+        elif mapping.mcdm_column_name:
+            transform_logic = f"'{source_column}'"
+            
+        # Determine data type
+        data_type = mapping.custom_data_type or mapping.inferred_data_type or 'VARCHAR(255)'
         
-        # Add data type casting if needed
-        if mapping.custom_data_type or mapping.inferred_data_type:
-            data_type = mapping.custom_data_type or mapping.inferred_data_type
-            if "DATE" in data_type.upper():
-                source_expr = f"TO_DATE({source_expr})"
-            elif "TIMESTAMP" in data_type.upper():
-                source_expr = f"TO_TIMESTAMP({source_expr})"
-            elif "NUMBER" in data_type.upper():
-                source_expr = f"TRY_CAST({source_expr} AS NUMBER)"
+        # Provider file group flag (Feature 2)
+        provider_flag = mapping.provider_file_group or 'NULL'
         
-        source_expressions.append(f"    {source_expr}")
+        # Multi-table support (Feature 1)
+        target_tables = mapping.target_tables or f"'{mcdm_table}'"
+        
+        # Version and reuse info (Feature 3)
+        version = mapping.crosswalk_version or '1.0'
+        parent_mapping = mapping.parent_mapping_id or 'NULL'
+        reuse_client = mapping.reuse_from_client or 'NULL'
+        
+        # Join information (Feature 5)
+        join_key = mapping.join_key_column or 'NULL'
+        join_table = mapping.join_table or 'NULL'
+        join_type = mapping.join_type or 'INNER'
+        
+        # MCS review status (Feature 7)
+        mcs_required = 'TRUE' if mapping.mcs_review_required else 'FALSE'
+        mcs_status = mapping.mcs_review_status or 'PENDING'
+        
+        # Completion status
+        completion_status = mapping.completion_status or 'DRAFT'
+        
+        insert_sql = f"""INSERT INTO crosswalk.configuration (
+    client_id, source_column_name, file_group_name, 
+    mcdm_column_name, mcdm_table_name, data_type,
+    transformation_logic, provider_file_group, target_tables,
+    crosswalk_version, parent_mapping_id, reuse_from_client,
+    join_key_column, join_table, join_type,
+    mcs_review_required, mcs_review_status, completion_status,
+    created_at, updated_at
+) VALUES (
+    '{client_id}', '{source_column}', '{file_group}',
+    {'NULL' if mcdm_column == 'NULL' else f"'{mcdm_column}'"}, '{mcdm_table}', '{data_type}',
+    {transform_logic}, {'NULL' if provider_flag == 'NULL' else f"'{provider_flag}'"}, {target_tables},
+    '{version}', {parent_mapping}, {'NULL' if reuse_client == 'NULL' else f"'{reuse_client}'"},
+    {'NULL' if join_key == 'NULL' else f"'{join_key}'"}, {'NULL' if join_table == 'NULL' else f"'{join_table}'"}, '{join_type}',
+    {mcs_required}, '{mcs_status}', '{completion_status}',
+    CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+);"""
+        
+        sql_lines.append(insert_sql)
+        sql_lines.append("")
     
-    sql_lines.extend([",\n".join(target_columns)])
-    sql_lines.append(")")
-    sql_lines.append("SELECT")
-    sql_lines.extend([",\n".join(source_expressions)])
-    sql_lines.append("FROM source_table -- Replace with actual source table name;")
-    sql_lines.append("")
+    sql_lines.extend([
+        f"-- Summary: {len([m for m in mappings if not m.skipped_flag])} crosswalk mappings inserted",
+        f"-- These mappings will be used by ETL processes to transform source data",
+        f"-- Run this script in your Snowflake environment to update crosswalk configuration",
+        ""
+    ])
     
     return "\n".join(sql_lines)
 

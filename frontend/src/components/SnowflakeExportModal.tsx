@@ -96,7 +96,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="CREATE_TABLE">CREATE TABLE</option>
-                  <option value="INSERT_MAPPING">INSERT SELECT</option>
+                  <option value="INSERT_MAPPING">🎯 Crosswalk Configuration INSERTs (ETL Foundation)</option>
                   <option value="FULL_ETL">Full ETL with Joins</option>
                 </select>
               </div>
@@ -120,9 +120,19 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
               <div className="text-sm text-blue-800 space-y-1">
                 <p><strong>Client:</strong> {clientId}</p>
                 <p><strong>File Group:</strong> {fileGroup || 'All'}</p>
-                <p><strong>Export Type:</strong> {exportType}</p>
-                <p><strong>Target Table:</strong> {tableName || 'Not specified'}</p>
+                <p><strong>Export Type:</strong> {exportType === 'INSERT_MAPPING' ? 'Crosswalk Configuration INSERTs' : exportType}</p>
+                <p><strong>Target Table:</strong> {tableName || (exportType === 'INSERT_MAPPING' ? 'crosswalk.configuration (recommended)' : 'Not specified')}</p>
               </div>
+              
+              {exportType === 'INSERT_MAPPING' && (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                  <p className="text-sm text-yellow-800">
+                    <i className="fas fa-info-circle mr-2"></i>
+                    <strong>Critical:</strong> These INSERTs populate your crosswalk.configuration table - 
+                    the foundation for all your ETL processes. This is the "Output DML for Crosswalk" functionality.
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && (
