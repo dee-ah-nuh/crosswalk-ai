@@ -4,11 +4,11 @@
 case "${1:-run}" in
     "run")
         echo "🚀 Starting Crosswalk ETL Helper..."
-        python deploy.py
+        exec python deploy.py
         ;;
     "dev")
         echo "🔧 Starting development mode..."
-        python main.py
+        exec python main.py
         ;;
     "build")
         echo "🔨 Building frontend..."
