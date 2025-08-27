@@ -4,6 +4,16 @@
 
 A production-grade data engineering tool designed to streamline the process of mapping source data columns to standardized data models. The application enables data engineers to upload CSV/Excel files or define schema-only column lists, create interactive mappings to predefined data model fields, validate data using regex rules, and export configurations in multiple formats (CSV, Excel, JSON, SQL). The system supports custom field creation, data transformation using a built-in DSL, and optional data warehouse integration for fetching sample data.
 
+## Recent Changes
+
+**Deployment Fixes Applied (August 27, 2025)**
+- Fixed crosswalk script executable permissions using `chmod +x crosswalk`
+- Added proper shebang (#!/bin/bash) to crosswalk script
+- Enhanced deploy.py with better error handling and fallback database seeding
+- Created alternative deployment scripts (start.py) for maximum reliability
+- Fixed import issues in deploy.py with try-catch error handling
+- Verified all deployment commands work correctly (./crosswalk run, python deploy.py, python start.py)
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -69,8 +79,10 @@ Run command: "crosswalk run" (uses unified deployment on port 5000)
 - **Development Server**: Built-in proxy configuration for API routing
 - **Production Deployment**: Static file serving with FastAPI backend using unified port 5000
 - **Feature Toggles**: Environment-based configuration for optional features like warehouse connectivity
-- **Run Commands**: Simple crosswalk script for starting the application
-  - `./crosswalk run` or `crosswalk run`: Start production server with unified frontend/backend
+- **Run Commands**: Multiple deployment options for reliability
+  - `./crosswalk run` or `crosswalk run`: Start production server with unified frontend/backend (primary)
   - `./crosswalk dev` or `crosswalk dev`: Start development mode with separate ports
   - `./crosswalk build` or `crosswalk build`: Build frontend only
   - `./crosswalk help` or `crosswalk help`: Show available commands
+  - `python deploy.py`: Direct deployment script execution (alternative)
+  - `python start.py`: Alternative deployment script (fallback)

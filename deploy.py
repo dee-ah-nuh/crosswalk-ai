@@ -18,26 +18,27 @@ def build_frontend():
     
     if not frontend_dist_path.exists():
         print("🔨 Building frontend...")
+        # Store original working directory
+        original_cwd = os.getcwd()
         try:
             # Change to frontend directory and build
-            original_cwd = os.getcwd()
             os.chdir(frontend_path)
             
             # Run npm build
             result = subprocess.run(["npm", "run", "build"], check=True, capture_output=True, text=True)
             print("✅ Frontend built successfully!")
             
-            os.chdir(original_cwd)
         except subprocess.CalledProcessError as e:
             print(f"❌ Frontend build failed: {e}")
             print(f"Output: {e.stdout}")
             print(f"Error: {e.stderr}")
-            os.chdir(original_cwd)
             exit(1)
         except Exception as e:
             print(f"❌ Error building frontend: {e}")
-            os.chdir(original_cwd)
             exit(1)
+        finally:
+            # Always restore original working directory
+            os.chdir(original_cwd)
     else:
         print("✅ Frontend already built.")
 
@@ -53,14 +54,23 @@ def setup_backend():
     
     try:
         # Initialize database and seed data before importing app
-        from database import init_db
-        from seed_data import seed_initial_data
-        
-        # Initialize the database
-        print("🔧 Initializing database...")
-        init_db()
-        print("🌱 Seeding initial data...")
-        seed_initial_data()
+        try:
+            from database import init_db
+            from seed_data import seed_initial_data
+            
+            # Initialize the database
+            print("🔧 Initializing database...")
+            init_db()
+            print("🌱 Seeding initial data...")
+            seed_initial_data()
+        except ImportError as e:
+            print(f"⚠️  Warning: Could not import database modules: {e}")
+            print("🔄 Attempting to use seed_database.py instead...")
+            try:
+                subprocess.run(["python", "seed_database.py"], check=True, cwd=backend_path)
+                print("✅ Database seeded successfully using seed_database.py")
+            except Exception as seed_error:
+                print(f"❌ Failed to seed database: {seed_error}")
         
         from app import app
         return app
@@ -80,9 +90,14 @@ if __name__ == "__main__":
     print("🌐 Frontend App: http://0.0.0.0:5000/")
     
     # Run the server on port 5000 for deployment
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=5000,
-        reload=False
-    )
+    try:
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=5000,
+            reload=False
+        )
+    except Exception as e:
+        print(f"❌ Failed to start server: {e}")
+        print("💡 Port 5000 might already be in use. Try stopping other services first.")
+        exit(1)
