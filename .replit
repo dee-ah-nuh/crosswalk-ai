@@ -40,7 +40,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python deploy.py"
+args = "./crosswalk run"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
