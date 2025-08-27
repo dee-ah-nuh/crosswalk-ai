@@ -6,22 +6,19 @@ This is a fallback if crosswalk command fails
 
 import sys
 import os
+import subprocess
 from pathlib import Path
 
-# Add current directory to path to import deploy
-sys.path.insert(0, str(Path(__file__).parent))
-
-# Import and run the main deployment script
 if __name__ == "__main__":
     print("🚀 Starting via alternative deployment script...")
     try:
-        import deploy
-        # This will run the deploy script's main block
-        print("✅ Alternative deployment script completed successfully")
-    except ImportError as e:
-        print(f"❌ Failed to import deploy module: {e}")
+        # Run deploy.py directly to ensure it stays running
         print("💡 Running deploy.py directly...")
-        os.system("python deploy.py")
+        result = subprocess.run([sys.executable, "deploy.py"], check=True)
+        print("✅ Deployment completed successfully")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Deployment failed with exit code: {e.returncode}")
+        sys.exit(1)
     except Exception as e:
         print(f"❌ Deployment failed: {e}")
         sys.exit(1)
