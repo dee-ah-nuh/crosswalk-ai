@@ -19,22 +19,27 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware
+# CORS middleware - allow all origins for deployment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000", "http://127.0.0.1:5000"],
+    allow_origins=["*"],  # Allow all origins for deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
+# Include API routers
 app.include_router(profiles.router, prefix="/api")
 app.include_router(crosswalk.router, prefix="/api")
 app.include_router(exports.router, prefix="/api")
 app.include_router(datamodel.router)
 app.include_router(snowflake_export.router)
 app.include_router(auto_mapping.router)
+
+# Serve static files from the frontend build directory
+frontend_dist_path = os.path.join(os.path.dirname(__file__), "../frontend/dist")
+if os.path.exists(frontend_dist_path):
+    app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="static")
 
 @app.get("/api/health")
 async def health_check():

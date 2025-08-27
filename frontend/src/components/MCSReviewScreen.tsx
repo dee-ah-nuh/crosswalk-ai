@@ -37,13 +37,13 @@ const MCSReviewScreen: React.FC<MCSReviewScreenProps> = () => {
       setMappings(data);
       
       // Calculate stats
-      const ready = data.filter(m => 
-        m.mcdm_column_name && m.mcdm_table_name && !m.skipped_flag
+      const ready = data.filter((m: CrosswalkMapping) => 
+        m.mcdm_column_name && (m.mcdm_table || m.mcdm_table_name) && !m.skipped_flag
       ).length;
-      const pending = data.filter(m => 
+      const pending = data.filter((m: CrosswalkMapping) => 
         !m.mcdm_column_name && !m.skipped_flag
       ).length;
-      const issues = data.filter(m => 
+      const issues = data.filter((m: CrosswalkMapping) => 
         (!m.mcdm_column_name && !m.skipped_flag) || (!m.data_type)
       ).length;
 
@@ -65,7 +65,7 @@ const MCSReviewScreen: React.FC<MCSReviewScreenProps> = () => {
     if (mapping.skipped_flag) {
       return <span className="px-2 py-1 text-xs font-medium bg-gray-600 text-gray-300 rounded">Skipped</span>;
     }
-    if (mapping.mcdm_column_name && mapping.mcdm_table_name) {
+    if (mapping.mcdm_column_name && (mapping.mcdm_table || mapping.mcdm_table_name)) {
       return <span className="px-2 py-1 text-xs font-medium bg-green-600 text-white rounded">Ready</span>;
     }
     return <span className="px-2 py-1 text-xs font-medium bg-yellow-600 text-white rounded">Pending</span>;
@@ -115,7 +115,7 @@ const MCSReviewScreen: React.FC<MCSReviewScreenProps> = () => {
   const filteredMappings = mappings.filter(mapping => {
     switch (filterStatus) {
       case 'ready':
-        return mapping.mcdm_column_name && mapping.mcdm_table_name && !mapping.skipped_flag;
+        return mapping.mcdm_column_name && (mapping.mcdm_table || mapping.mcdm_table_name) && !mapping.skipped_flag;
       case 'pending':
         return !mapping.mcdm_column_name && !mapping.skipped_flag;
       case 'issues':
@@ -280,9 +280,9 @@ const MCSReviewScreen: React.FC<MCSReviewScreenProps> = () => {
                     <div className="text-sm text-gray-400">Order: {mapping.source_column_order}</div>
                   </td>
                   <td className="px-4 py-4">
-                    {mapping.mcdm_table_name && mapping.mcdm_column_name ? (
+                    {(mapping.mcdm_table || mapping.mcdm_table_name) && mapping.mcdm_column_name ? (
                       <div className="text-green-400">
-                        {mapping.mcdm_table_name}.{mapping.mcdm_column_name}
+                        {mapping.mcdm_table || mapping.mcdm_table_name}.{mapping.mcdm_column_name}
                       </div>
                     ) : (
                       <div className="text-gray-400">Not mapped</div>

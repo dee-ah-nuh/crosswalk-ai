@@ -46,6 +46,9 @@ export interface CrosswalkMapping {
   inferred_data_type?: string | null;
   custom_data_type?: string | null;
   data_type_source?: string | null;
+  data_type?: string | null;
+  description?: string | null;
+  mcdm_table_name?: string | null;
   
   // Feature 5: Multi-file joins
   source_file_name?: string | null;
@@ -95,6 +98,34 @@ export interface FileGroup {
 const API_BASE_URL = '/api';
 
 class CrosswalkApiService {
+  async getCrosswalkMappings(params?: {
+    client_id?: string;
+    file_group?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<CrosswalkMapping[]> {
+    const urlParams = new URLSearchParams();
+    
+    if (params?.client_id) urlParams.append('client_id', params.client_id);
+    if (params?.file_group) urlParams.append('file_group', params.file_group);
+    if (params?.limit) urlParams.append('limit', params.limit.toString());
+    if (params?.offset) urlParams.append('offset', params.offset.toString());
+    
+    const response = await fetch(`${API_BASE_URL}/crosswalk?${urlParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return data.data || data; // Handle both response formats
+  }
+
   async getCrosswalkData(params?: {
     client_id?: string;
     file_group?: string;

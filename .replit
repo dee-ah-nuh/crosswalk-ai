@@ -20,7 +20,7 @@ args = "Backend"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Frontend"
+args = "Production"
 
 [[workflows.workflow]]
 name = "Backend"
@@ -35,12 +35,12 @@ waitForPort = 8000
 outputType = "console"
 
 [[workflows.workflow]]
-name = "Frontend"
+name = "Production"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm run dev"
+args = "cd backend && python seed_database.py && cd .. && python deploy.py"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
