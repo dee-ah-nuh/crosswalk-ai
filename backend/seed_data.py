@@ -3,8 +3,8 @@ Seed data for the Interactive Crosswalk & ETL Helper.
 """
 
 from sqlalchemy.orm import Session
-from .database import SessionLocal
-from .models import DataModelField
+from database import SessionLocal
+from models import DataModelField
 
 def seed_initial_data():
     """Seed initial data model fields"""

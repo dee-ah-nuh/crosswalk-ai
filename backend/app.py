@@ -40,6 +40,9 @@ app.include_router(auto_mapping.router)
 frontend_dist_path = os.path.join(os.path.dirname(__file__), "../frontend/dist")
 if os.path.exists(frontend_dist_path):
     app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="static")
+else:
+    print(f"⚠️  Warning: Frontend dist directory not found at {frontend_dist_path}")
+    print("   Run 'cd frontend && npm run build' to build the frontend first.")
 
 @app.get("/api/health")
 async def health_check():

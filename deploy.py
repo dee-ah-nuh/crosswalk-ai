@@ -6,19 +6,74 @@ Serves both the FastAPI backend and the built frontend
 
 import os
 import sys
+import subprocess
 import uvicorn
+from pathlib import Path
 
-# Add the backend directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+def build_frontend():
+    """Build the frontend if not already built"""
+    project_root = Path(__file__).parent
+    frontend_path = project_root / "frontend"
+    frontend_dist_path = frontend_path / "dist"
+    
+    if not frontend_dist_path.exists():
+        print("🔨 Building frontend...")
+        try:
+            # Change to frontend directory and build
+            original_cwd = os.getcwd()
+            os.chdir(frontend_path)
+            
+            # Run npm build
+            result = subprocess.run(["npm", "run", "build"], check=True, capture_output=True, text=True)
+            print("✅ Frontend built successfully!")
+            
+            os.chdir(original_cwd)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Frontend build failed: {e}")
+            print(f"Output: {e.stdout}")
+            print(f"Error: {e.stderr}")
+            os.chdir(original_cwd)
+            exit(1)
+        except Exception as e:
+            print(f"❌ Error building frontend: {e}")
+            os.chdir(original_cwd)
+            exit(1)
+    else:
+        print("✅ Frontend already built.")
 
-from app import app
+def setup_backend():
+    """Setup backend environment and imports"""
+    # Add the backend directory to the Python path
+    backend_path = Path(__file__).parent / 'backend'
+    sys.path.insert(0, str(backend_path))
+    
+    # Set the working directory to backend for relative imports to work
+    original_cwd = os.getcwd()
+    os.chdir(backend_path)
+    
+    try:
+        # Initialize database and seed data before importing app
+        from database import init_db
+        from seed_data import seed_initial_data
+        
+        # Initialize the database
+        print("🔧 Initializing database...")
+        init_db()
+        print("🌱 Seeding initial data...")
+        seed_initial_data()
+        
+        from app import app
+        return app
+    finally:
+        # Restore original working directory
+        os.chdir(original_cwd)
 
 if __name__ == "__main__":
-    # Ensure the frontend is built
-    frontend_dist_path = os.path.join(os.path.dirname(__file__), "frontend", "dist")
-    if not os.path.exists(frontend_dist_path):
-        print("❌ Frontend not built. Please run 'cd frontend && npm run build' first.")
-        exit(1)
+    # Build the frontend first
+    build_frontend()
+    
+    # Setup backend and get app instance
+    app = setup_backend()
     
     print("🚀 Starting Interactive Crosswalk & ETL Helper...")
     print("📊 Backend API: http://0.0.0.0:5000/api/health")
