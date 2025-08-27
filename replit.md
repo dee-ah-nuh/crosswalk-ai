@@ -7,6 +7,7 @@ A production-grade data engineering tool designed to streamline the process of m
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Run command: "crosswalk run" (uses unified deployment on port 5000)
 
 ## System Architecture
 
@@ -66,5 +67,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Environment Configuration
 - **Development Server**: Built-in proxy configuration for API routing
-- **Production Deployment**: Static file serving with FastAPI backend
+- **Production Deployment**: Static file serving with FastAPI backend using unified port 5000
 - **Feature Toggles**: Environment-based configuration for optional features like warehouse connectivity
+- **Run Commands**: Simple crosswalk script for starting the application
+  - `./crosswalk run` or `crosswalk run`: Start production server with unified frontend/backend
+  - `./crosswalk dev` or `crosswalk dev`: Start development mode with separate ports
+  - `./crosswalk build` or `crosswalk build`: Build frontend only
+  - `./crosswalk help` or `crosswalk help`: Show available commands

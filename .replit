@@ -43,7 +43,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm run build && cd ../backend && python seed_database.py && cd .. && python deploy.py"
+args = "python deploy.py"
 waitForPort = 5000
 
 [[ports]]
