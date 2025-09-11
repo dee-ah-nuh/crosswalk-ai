@@ -1,11 +1,25 @@
+"""FastAPI application for the Interactive Crosswalk & ETL Helper.
+
+This module is designed to be importable both when the current working directory
+is the backend folder (e.g. running ``uvicorn app:app`` from inside ``backend``)
+and when running from the project root with ``uvicorn backend.app:app``.
+
+Because many internal modules use bare imports like ``from database import ...``
+we ensure the backend directory itself is added to ``sys.path`` when imported
+as ``backend.app`` so those imports resolve without refactoring every module.
 """
-FastAPI application for the Interactive Crosswalk & ETL Helper.
-"""
+
+import os
+import sys
+
+# Ensure backend directory (this file's directory) is on sys.path for bare imports
+_BACKEND_DIR = os.path.dirname(__file__)
+if _BACKEND_DIR not in sys.path:  # idempotent
+    sys.path.insert(0, _BACKEND_DIR)
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import os
 
 from database import engine
 from models import Base
