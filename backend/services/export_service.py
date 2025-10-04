@@ -9,7 +9,7 @@ from typing import List, Dict, Any
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from models import SourceProfile, SourceColumn, CrosswalkMapping, RegexRule, DataModelField
+from database.models import SourceProfile, SourceColumn, CrosswalkMapping, RegexRule, DataModelField
 from services.dsl_engine import DSLEngine
 
 class ExportService:

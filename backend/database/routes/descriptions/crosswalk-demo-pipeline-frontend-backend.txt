@@ -1,0 +1,60 @@
+--------------------------
+|   STEP 1: FileUpload   |
+--------------------------
+File: frontend/src/components/FileUpload.tsx
+- User uploads a file or clicks "Demo Data".
+- Triggers logic to handle file or demo data.
+
+        |
+        v
+
+--------------------------
+|   STEP 2: UploadScreen |
+--------------------------
+File: frontend/src/components/UploadScreen.tsx
+- Prepares demo columns and rows.
+- Calls handleDemoData(), which sends a POST request to backend:
+  - Endpoint: /api/crosswalk/demo
+  - Payload: JSON array of demo rows
+
+        |
+        v
+
+-------------------------------
+|   STEP 2.5: Profile Creation |
+-------------------------------
+File: frontend/src/components/UploadScreen.tsx
+- After demo data is inserted, sends a POST request to backend:
+  - Endpoint: /api/profiles
+  - Payload: Form data with profile name and client_id (e.g., { name: "TEST", client_id: "TEST" })
+- This creates a new profile in the profiles table, making client_id appear in the frontend dropdown.
+
+        |
+        v
+
+-------------------------------
+|   STEP 3: Backend Endpoint  |
+-------------------------------
+File: backend/database/routes/crosswalk.py
+- Function: insert_demo_crosswalk
+- Receives POST request, validates data, inserts rows into crosswalk_template table.
+
+        |
+        v
+
+-----------------------------------
+|   STEP 4: Database Table Update |
+-----------------------------------
+File: backend/database/crosswalk.duckdb (DuckDB database)
+- Table: crosswalk_template
+- Demo rows are inserted here.
+
+        |
+        v
+
+--------------------------
+|   STEP 5: Frontend Grid|
+--------------------------
+File: frontend/src/components/CrosswalkGrid.tsx (or similar)
+- Frontend fetches crosswalk data from backend (/api/crosswalk).
+- Displays mapping grid to user for review/edit.

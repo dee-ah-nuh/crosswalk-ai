@@ -5,6 +5,7 @@ import UploadScreen from './components/UploadScreen';
 import CrosswalkTemplateGrid from './components/CrosswalkTemplateGrid';
 import MCSReviewScreen from './components/MCSReviewScreen';
 import { crosswalkApi, Client, FileGroup, CrosswalkSummary } from './services/crosswalkApi';
+import PI20DataModelGrid from './components/PI20DataModelGrid';
 
 function App() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -196,6 +197,7 @@ function App() {
         <Route path="/upload" element={<UploadScreen />} />
         <Route path="/crosswalk" element={<CrosswalkWithFilters />} />
         <Route path="/mcs-review" element={<MCSReviewScreen />} />
+        <Route path="/data-model" element={<PI20DataModelGrid />} />
       </Routes>
     </Router>
   );

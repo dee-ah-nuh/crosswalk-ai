@@ -152,6 +152,7 @@ class CrosswalkApiService {
     
     return response.json();
   }
+
   
   async updateMapping(id: number, data: Partial<CrosswalkMapping>): Promise<{success: boolean; message: string}> {
     const response = await fetch(`${API_BASE_URL}/crosswalk/${id}`, {
@@ -176,12 +177,12 @@ class CrosswalkApiService {
         'Content-Type': 'application/json',
       },
     });
-    
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
-    return response.json();
+    const clients = await response.json();
+    console.log('Fetched clients:', clients);
+    return clients;
   }
   
   async getFileGroups(client_id?: string): Promise<FileGroup[]> {

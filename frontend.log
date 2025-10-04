@@ -1,0 +1,59 @@
+
+> crosswalk-etl-frontend@1.0.0 dev
+> vite --host 0.0.0.0 --port 1234
+
+
+  VITE v7.1.7  ready in 70 ms
+
+  ➜  Local:   http://localhost:1234/
+  ➜  Network: http://172.20.10.11:1234/
+6:13:54 PM [vite] (client) hmr update /src/components/UploadScreen.tsx
+6:28:00 PM [vite] (client) hmr update /src/components/UploadScreen.tsx
+6:29:43 PM [vite] (client) hmr update /src/components/UploadScreen.tsx
+6:33:50 PM [vite] (client) hmr update /src/components/UploadScreen.tsx
+7:01:20 PM [vite] (client) hmr update /src/components/UploadScreen.tsx
+7:04:38 PM [vite] (client) hmr update /src/App.tsx, /src/components/MCSReviewScreen.tsx, /src/components/CrosswalkTemplateGrid.tsx, /src/components/SnowflakeExportModal.tsx
+7:04:43 PM [vite] (client) hmr update /src/App.tsx, /src/components/MCSReviewScreen.tsx, /src/components/CrosswalkTemplateGrid.tsx, /src/components/SnowflakeExportModal.tsx
+11:27:42 PM [vite] (client) hmr update /src/App.tsx, /src/components/MCSReviewScreen.tsx, /src/components/CrosswalkTemplateGrid.tsx, /src/components/SnowflakeExportModal.tsx
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/clients
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/file-groups?
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/clients
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/summary
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/file-groups?
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/summary
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/file-groups?
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk/file-groups?
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+12:21:15 AM [vite] http proxy error: /api/crosswalk?limit=500
+Error: connect ECONNREFUSED 0.0.0.0:8000
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)

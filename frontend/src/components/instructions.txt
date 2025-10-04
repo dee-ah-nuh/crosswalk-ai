@@ -1,0 +1,77 @@
+Create a React TypeScript component using the following design system specifications:
+
+**TECHNOLOGY STACK:**
+- React with TypeScript
+- Tailwind CSS for styling
+- @tanstack/react-table (if tables needed)
+- Font Awesome icons (fas classes)
+
+**DARK THEME COLOR PALETTE:**
+- Primary brand: orange-600, orange-700 (buttons, accents, highlights)
+- Backgrounds: gray-900 (darkest), gray-800 (cards/secondary), gray-700 (borders/hover)
+- Text: white (primary), gray-300 (secondary), gray-400 (tertiary)
+- Borders: gray-700 (primary), gray-600 (secondary)
+- Status colors: green-500/green-800 (success), red-500/red-800 (error), yellow-800 (warning)
+
+**COMPONENT PATTERNS:**
+- Headers: `bg-gray-800 border-b border-gray-700 px-6 py-4`
+- Cards: `bg-gray-800 rounded-lg shadow-sm border-2 border-gray-600`
+- Buttons (primary): `bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg`
+- Buttons (secondary): `bg-gray-700 hover:bg-gray-600 text-white border border-gray-600`
+- Form inputs: `bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-orange-500 focus:border-orange-500`
+- Tables: Header `bg-gray-700`, body `bg-gray-800`, dividers `divide-gray-700`
+- Search inputs: Include Font Awesome search icon with `pl-10` padding and `absolute left-3` positioning
+
+**INTERACTIVE STATES:**
+- Hover: gray-700 for backgrounds, orange-700 for buttons
+- Selected: border-orange-500 with ring-2 ring-orange-200
+- Focus: ring-2 ring-orange-500 focus:border-orange-500
+- Loading spinners: border-orange-600
+
+**TYPOGRAPHY:**
+- Headers: text-white font-semibold
+- Body text: text-white for primary, text-gray-300 for secondary
+- Labels: text-gray-300 font-medium
+- Monospace: font-mono (for code/data)
+- Icons: Font Awesome classes (fas fa-[icon-name])
+
+**STATUS INDICATORS:**
+- Success/Mapped: bg-green-100 text-green-800
+- Error/Incomplete: bg-red-100 text-red-800
+- Warning/Review: bg-yellow-100 text-yellow-800
+- Info: bg-orange-100 text-orange-800
+
+**LAYOUT PATTERNS:**
+- Main container: `bg-gray-900 h-full flex flex-col`
+- Content sections: `flex-1 overflow-auto p-6`
+- Filter bars: `px-6 py-4 border-b border-gray-700`
+- Grid layouts: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`
+
+**LOADING/EMPTY STATES:**
+- Loading: Spinner with `animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600`
+- Empty states: Font Awesome icon, gray-400 text, centered layout
+
+**SPECIFIC REQUEST:**
+[Insert your specific component requirements here]
+
+**OUTPUT REQUIREMENTS:**
+- Complete, functional TypeScript React component
+- All styling using Tailwind classes (no custom CSS)
+- Consistent with the dark theme palette above
+- Include proper TypeScript interfaces
+- Add loading and error states
+- Include hover/interactive states
+- Use Font Awesome icons where appropriate
+
+
+[Paste the template above, then add:]
+
+**SPECIFIC REQUEST:**
+
+Create a user management table component that displays user information with the ability to:
+- Filter by role and status
+- Sort by columns
+- Edit user details inline
+- Add new users via a modal
+- Show user avatar, name, email, role, and last login
+- Include pagination for large datasets

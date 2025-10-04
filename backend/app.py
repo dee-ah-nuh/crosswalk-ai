@@ -12,6 +12,8 @@ as ``backend.app`` so those imports resolve without refactoring every module.
 import os
 import sys
 
+from database.routes import crosswalk as crosswalk
+
 # Ensure backend directory (this file's directory) is on sys.path for bare imports
 _BACKEND_DIR = os.path.dirname(__file__)
 if _BACKEND_DIR not in sys.path:  # idempotent
@@ -21,22 +23,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from database import engine
-from models import Base
-from routes import profiles, exports, datamodel, snowflake_export
-from routes import crosswalk_new as crosswalk, auto_mapping
+from database.duckdb_cxn import engine
+from database.models import Base
+from database.routes import profiles, exports, datamodel, snowflake_export
+from database.routes import auto_mapping
 
 # Create FastAPI app
 app = FastAPI(
-    title="Interactive Crosswalk & ETL Helper",
-    description="Data engineering tool for column mapping and validation",
+    title="Crosswalk Aarete - Agentic Data Engineering Tool",
+    description="Data engineering tool for column mapping and validation. Created by Diana Valladares.",
     version="1.0.0"
 )
 
-# CORS middleware - allow all origins for deployment
+# CORS middleware 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for deployment
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,7 +52,7 @@ app.include_router(datamodel.router)
 app.include_router(snowflake_export.router)
 app.include_router(auto_mapping.router)
 
-# Serve static files from the frontend build directory
+# Serve static files from the frontend
 frontend_dist_path = os.path.join(os.path.dirname(__file__), "../frontend/dist")
 if os.path.exists(frontend_dist_path):
     app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="static")
@@ -64,6 +66,11 @@ async def health_check():
     return {"status": "healthy", "service": "crosswalk-etl-helper"}
 
 @app.on_event("startup")
-async def startup_event():
-    """Initialize database on startup"""
-    Base.metadata.create_all(bind=engine)
+async def _print_routes():
+    print("\n=== ROUTES ===")
+    for r in app.router.routes:
+        try:
+            print(r.path, getattr(r, "methods", None))
+        except Exception:
+            pass
+    print("==============\n")

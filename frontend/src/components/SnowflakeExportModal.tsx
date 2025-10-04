@@ -109,7 +109,7 @@ const SnowflakeExportModal: React.FC<SnowflakeExportModalProps> = ({
                   type="text"
                   value={tableName}
                   onChange={(e) => setTableName(e.target.value)}
-                  placeholder="e.g., UPHP_CLAIMS_STAGING"
+                  placeholder="e.g., CLIENT_CLAIMS_STAGING"
                   className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white"
                 />
               </div>

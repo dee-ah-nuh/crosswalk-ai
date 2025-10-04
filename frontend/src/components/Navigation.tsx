@@ -19,6 +19,12 @@ const Navigation: React.FC = () => {
       description: 'Map source columns to data model'
     },
     {
+      path: '/data-model',
+      label: 'PI20 Data Model',
+      icon: 'fas fa-database',
+      description: 'Browse standardized healthcare fields'
+    },
+    {
       path: '/mcs-review',
       label: 'MCS Review',
       icon: 'fas fa-clipboard-check',
@@ -29,7 +35,7 @@ const Navigation: React.FC = () => {
   const currentStep = navigationItems.findIndex(item => item.path === location.pathname);
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col">
+    <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Header */}
       <div className="bg-gray-900 border-b border-gray-700 shadow-sm">
         <div className="px-6 py-4">
@@ -185,8 +191,8 @@ const Navigation: React.FC = () => {
                   <i className="fas fa-rocket"></i>
                 </div>
                 <div className="ml-3 text-sm">
-                  <div className="font-medium text-white">Production</div>
-                  <div className="text-gray-400">Deploy</div>
+                  <div className="font-medium text-white">Start Snowflake</div>
+                  <div className="text-gray-400"> ETL</div>
                 </div>
               </div>
             </div>

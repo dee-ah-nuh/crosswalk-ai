@@ -21,22 +21,60 @@ const UploadScreen: React.FC<UploadScreenProps> = () => {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Record<string, MappingSuggestion[]>>({});
 
-  // Sample demo data for testing
+  // ------------ DEMO DATA AND AI SUGGESTION HANDLING -------------- 
+  // CANT USE AARETE DATA SO WE CREATED OUR OWN
+
+
   const handleDemoData = async () => {
     setLoading(true);
     const demoColumns: ColumnInfo[] = [
-      { name: 'MEMBER_FIRST_NAME', sample_values: ['John', 'Jane', 'Mike', 'Sarah'] },
-      { name: 'MEMBER_LAST_NAME', sample_values: ['Smith', 'Johnson', 'Williams', 'Brown'] },
+      { name: 'FIRST_NAME', sample_values: ['John', 'Jane', 'Mike', 'Sarah'] },
+      { name: 'LAST_NAME', sample_values: ['Smith', 'Johnson', 'Williams', 'Brown'] },
       { name: 'CLAIM_NUMBER', sample_values: ['12345-67890', '98765-43210', '11111-22222'] },
       { name: 'SERVICE_DATE', sample_values: ['2024-01-15', '2024-02-20', '2024-03-10'] },
       { name: 'CLAIM_AMOUNT', sample_values: ['1250.00', '890.50', '2100.75'] },
       { name: 'PROVIDER_NPI', sample_values: ['1234567890', '0987654321', '1122334455'] },
+      { name: 'DIAGNOSIS_CODE', sample_values: ['E11.9', 'I10', 'J45.909'] },
+      { name: 'PROCEDURE_CODE', sample_values: ['99213', '93000', '80050'] },
+      { name: 'PATIENT_ID', sample_values: ['P123456', 'P654321', 'P112233'] },
+      { name: 'ADMISSION_DATE', sample_values: ['2024-01-10', '2024-02-15', '2024-03-05'] },
+      { name: 'DISCHARGE_DATE', sample_values: ['2024-01-12', '2024-02-18', '2024-03-08'] },
+      { name: 'TOTAL_CHARGES', sample_values: ['5000.00', '3000.50', '7500.25'] },
+      { name: 'INSURANCE_PLAN', sample_values: ['Gold', 'Silver', 'Platinum'] },
+      { name: 'POLICY_NUMBER', sample_values: ['POL123456', 'POL654321', 'POL112233'] },
+      { name: 'GROUP_NUMBER', sample_values: ['GRP123', 'GRP456', 'GRP789'] },
+      { name: 'BIRTH_DATE', sample_values: ['1980-05-15', '1990-08-22', '1975-12-30'] }
     ];
 
     setColumns(demoColumns);
 
+    // ------------ THE POST (INJECTION) TO BACKEND --------------
+    const demoRows = demoColumns.map((col, idx) => ({
+      client_id: 'TEST',
+      source_column_order: idx + 1,
+      source_column_name: col.name,
+      file_group_name: 'CLAIM'
+    }));
+
     try {
-      // Get AI suggestions for demo columns
+      await fetch('/api/crosswalk/demo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(demoRows) 
+  });
+
+    // ------------ the post for the profiles/ to select from the profiles, when we have data
+
+      const formData = new FormData();
+      formData.append('name', clientId);
+      formData.append('client_id', clientId);
+
+      await fetch('/api/profiles', {
+        method: 'POST',
+        body: formData
+  });
+
+      // ---- DATA SCIENCE ASPECT OF CROSSWALK AI   ----
       const sourceCols = demoColumns.map(col => ({
         column_name: col.name,
         sample_values: col.sample_values
@@ -45,7 +83,7 @@ const UploadScreen: React.FC<UploadScreenProps> = () => {
       const aiSuggestions = await autoMappingService.getSuggestions(sourceCols);
       setSuggestions(aiSuggestions);
     } catch (error) {
-      console.error('Error getting AI suggestions:', error);
+      console.error('Error getting AI suggestions or inserting demo data:', error);
     }
 
     setLoading(false);
@@ -55,9 +93,7 @@ const UploadScreen: React.FC<UploadScreenProps> = () => {
     const file = event.target.files?.[0];
     if (file) {
       setUploadedFile(file);
-      // In a real implementation, you would parse the CSV/Excel file here
-      // For demo purposes, we'll use sample data
-      handleDemoData();
+      // -------------- TODO: PARSE OUT LOGIC TO HANDLE CSV AND EXCEL FILE UPLOADS 
     }
   };
 
@@ -196,7 +232,7 @@ const UploadScreen: React.FC<UploadScreenProps> = () => {
 
               <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
                 <i className="fas fa-magic text-4xl text-gray-400 mb-4"></i>
-                <h3 className="text-lg font-medium text-white mb-2">Use Demo Data</h3>
+                <h3 className="text-lg font-medium text-white mb-2">Use Sample Data</h3>
                 <p className="text-sm text-gray-400 mb-4">
                   Try with sample healthcare data
                 </p>
@@ -211,7 +247,7 @@ const UploadScreen: React.FC<UploadScreenProps> = () => {
                       Loading...
                     </>
                   ) : (
-                    'Load Demo Data'
+                    'Load Sample Data'
                   )}
                 </button>
               </div>

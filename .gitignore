@@ -1,12 +1,2 @@
 node_modules
-*__pycache__*
-*.pyc
-.venv
-.env
-.DS_Store
-dist
-build
-.vscode
-coverage
-*.sqlite3
-.local
+crosswalk 

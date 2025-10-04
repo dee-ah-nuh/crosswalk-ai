@@ -1,0 +1,55 @@
+[ 09 -25 - 25]
+
+Been working on this for roughly 40 hours. 
+Heres whats been done. 
+
+[ backend ]
+
+#########################
+-- appy.py 
+
+Created API and backend using FASTAPI -  just the backbone
+script which helps & tell developers what functions they should
+be importing just like normal Python packages. 
+
+CORS middleware just specifies what specific ports are going to be allowed
+to get access to the app, most likely will be handled by security, would 
+probably only be accessible through the RDS. 
+
+API Routers just means that whatever route you specify in the TSX pages (the UI that 
+is displayed) but handled by the backend file, runs on that specific link or route. 
+For example, if the page were trying to get is the actual crosswalk mapping page aka:
+
+APP_LINK.COM/crosswalk/
+
+we would import the crosswal function like a normal python package and then say to the 
+router, hey allow crosswalk to be displayed at my link (APP_LINK.COM/crosswalk/). 
+Even though this script says api/ -- that will be replaced with the actual link we get --.
+todo: we will create a data model page for the datamodel from aarete, and a button at the 
+top of every script so we can it at any time in any part of website, and so on for others.
+
+    #########################
+    -- databse/ddl/ 
+
+    #########################
+    -- database/routes/ 
+
+#########################
+-- services/
+
+
+#########################
+-- datascience/
+
+-- datascience/automapping.py 
+So, initially, this did not contain a model nor did I want it 
+to contain a model, I gave the problem statement to ChatGPT and it 
+gave me like a file parser for the REGEX and a self-learning model 
+that handles that. 
+
+[ frontend ]    
+
+
+[ buisiness defintions ]
+
+
