@@ -1,2 +1,26 @@
 node_modules
-crosswalk 
+crosswalk
+crosswalksource/
+
+# Build artifacts
+frontend/dist/
+
+# Log files
+*.log
+backend.log
+frontend.log
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Personal notes
+todo.txt
+
+# IDE files (optional - you may want to keep .vscode if you share IDE settings)
+# .vscode/
