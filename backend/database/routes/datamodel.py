@@ -24,13 +24,19 @@ router = APIRouter(prefix="/api/datamodel", tags=["datamodel"])
 
 # Response models
 class DataModelField(BaseModel):
-    schema_layer: str
+    id: int
+    in_crosswalk: str
     table_name: str
     column_name: str
-    data_type: str
-    description: str
-    is_standard_field: bool
-    is_case_sensitive: bool
+    column_type: str
+    column_order: int
+    column_comment: str
+    table_creation_order: int
+    is_mandatory: bool
+    mandatory_prov_type: str
+    mcdm_masking_type: str
+    in_edits: bool
+    key: str
 
 class ValidationResult(BaseModel):
     is_valid: bool
@@ -44,7 +50,7 @@ class FieldSuggestion(BaseModel):
     confidence_score: float
     reason: str
 
-@router.get("/fields", response_model=List[DataModelField])
+@router.get("", response_model=List[DataModelField])
 async def get_data_model_fields(
     schema_layer: Optional[str] = None,
     table_name: Optional[str] = None,
@@ -54,17 +60,25 @@ async def get_data_model_fields(
     """Get PI20 data model fields with optional filtering"""
     
     query = """
-        SELECT schema_layer, table_name, column_name, data_type, 
-               description, is_standard_field, is_case_sensitive
+        SELECT 
+        ROW_NUMBER() OVER (ORDER BY TABLE_NAME, COLUMN_NAME) as id,
+        IN_CROSSWALK,
+        TABLE_NAME,
+        COLUMN_NAME,
+        COLUMN_TYPE,
+        COLUMN_ORDER,
+        COLUMN_COMMENT,
+        TABLE_CREATION_ORDER,
+        IS_MANDATORY,
+        MANDATORY_PROV_TYPE,
+        MCDM_MASKING_TYPE,
+        IN_EDITS,
+        KEY
         FROM pi20_data_model
         WHERE 1=1
     """
     params = {}
-    
-    if schema_layer:
-        query += " AND schema_layer = :schema_layer"
-        params["schema_layer"] = schema_layer
-    
+
     if table_name:
         query += " AND table_name = :table_name"
         params["table_name"] = table_name
@@ -73,19 +87,25 @@ async def get_data_model_fields(
         query += " AND (column_name ILIKE :search OR description ILIKE :search)"
         params["search"] = f"%{search}%"
     
-    query += " ORDER BY schema_layer, table_name, column_name"
+    query += " ORDER BY table_name, column_name"
     
     result = db.execute(text(query), params)
     
     return [
         DataModelField(
-            schema_layer=row[0],
-            table_name=row[1],
-            column_name=row[2],
-            data_type=row[3],
-            description=row[4],
-            is_standard_field=row[5],
-            is_case_sensitive=row[6]
+            id=int(row[0]) if row[0] is not None else 0,
+            in_crosswalk=str(row[1]) if row[1] is not None else "",
+            table_name=str(row[2]) if row[2] is not None else "",
+            column_name=str(row[3]) if row[3] is not None else "",
+            column_type=str(row[4]) if row[4] is not None else "",
+            column_order=int(row[5]) if row[5] is not None else 0,
+            column_comment=str(row[6]) if row[6] is not None else "",
+            table_creation_order=int(row[7]) if row[7] is not None else 0,
+            is_mandatory=bool(row[8]) if row[8] is not None else False,
+            mandatory_prov_type=str(row[9]) if row[9] is not None else "",
+            mcdm_masking_type=str(row[10]) if row[10] is not None else "",
+            in_edits=bool(row[11]) if row[11] is not None else False,
+            key=str(row[12]) if row[12] is not None else ""
         )
         for row in result
     ]

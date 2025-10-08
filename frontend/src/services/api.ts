@@ -20,15 +20,20 @@ class ApiService {
   }
 
   async get(endpoint: string, params?: Record<string, string>) {
-    const url = new URL(`${API_BASE_URL}${endpoint}`);
+    let url: string;
+    const fullPath = `${API_BASE_URL}${endpoint}`;
     
     if (params) {
+      const urlObj = new URL(fullPath, window.location.origin);
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        urlObj.searchParams.append(key, value);
       });
+      url = urlObj.toString();
+    } else {
+      url = fullPath;
     }
 
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

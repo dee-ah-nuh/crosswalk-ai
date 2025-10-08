@@ -4,13 +4,18 @@ import { api } from '../services/api';
 
 interface PI20DataModelField {
   id: number;
-  schema_layer: string;
+  in_crosswalk: string;
   table_name: string;
   column_name: string;
-  data_type: string;
-  description: string;
-  is_standard_field: boolean;
-  is_case_sensitive: boolean;
+  column_type: string;
+  column_order: number;
+  column_comment: string;
+  table_creation_order: number;
+  is_mandatory: boolean;
+  mandatory_prov_type: string;
+  mcdm_masking_type: string;
+  in_edits: boolean;
+  key: string;
 }
 
 interface PI20DataModelProps {
@@ -25,7 +30,6 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
   const [data, setData] = useState<PI20DataModelField[]>([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState('');
-  const [schemaFilter, setSchemaFilter] = useState('');
   const [tableFilter, setTableFilter] = useState('');
 
   const columnHelper = createColumnHelper<PI20DataModelField>();
@@ -37,7 +41,7 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
   const fetchPI20Data = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/datamodel/fields');
+      const response = await api.get('/datamodel');
       setData(response);
     } catch (error) {
       console.error('Error fetching PI20 data model:', error);
@@ -47,14 +51,6 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
   };
 
   const columns = [
-    columnHelper.accessor('schema_layer', {
-      header: 'Schema Layer',
-      cell: info => (
-        <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-md text-xs font-medium">
-          {info.getValue()}
-        </span>
-      ),
-    }),
     columnHelper.accessor('table_name', {
       header: 'Table',
       cell: info => (
@@ -71,7 +67,7 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
         </span>
       ),
     }),
-    columnHelper.accessor('data_type', {
+    columnHelper.accessor('column_type', {
       header: 'Data Type',
       cell: info => (
         <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
@@ -79,7 +75,7 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
         </span>
       ),
     }),
-    columnHelper.accessor('description', {
+    columnHelper.accessor('column_comment', {
       header: 'Description',
       cell: info => (
         <span className="text-sm text-gray-300">
@@ -87,20 +83,8 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
         </span>
       ),
     }),
-    columnHelper.accessor('is_standard_field', {
-      header: 'Standard',
-      cell: info => (
-        <span className={`px-2 py-1 rounded-full text-xs ${
-          info.getValue() 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-yellow-100 text-yellow-800'
-        }`}>
-          {info.getValue() ? 'Yes' : 'No'}
-        </span>
-      ),
-    }),
-    columnHelper.accessor('is_case_sensitive', {
-      header: 'Case Sensitive',
+    columnHelper.accessor('is_mandatory', {
+      header: 'Mandatory',
       cell: info => (
         <span className={`px-2 py-1 rounded-full text-xs ${
           info.getValue() 
@@ -108,6 +92,18 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
             : 'bg-gray-100 text-gray-600'
         }`}>
           {info.getValue() ? 'Yes' : 'No'}
+        </span>
+      ),
+    }),
+    columnHelper.accessor('in_crosswalk', {
+      header: 'In Crosswalk',
+      cell: info => (
+        <span className={`px-2 py-1 rounded-full text-xs ${
+          info.getValue() === 'Y' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-yellow-100 text-yellow-800'
+        }`}>
+          {info.getValue()}
         </span>
       ),
     }),
@@ -126,13 +122,11 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
   });
 
   const filteredData = data.filter(field => {
-    const matchesSchema = !schemaFilter || field.schema_layer.toLowerCase().includes(schemaFilter.toLowerCase());
     const matchesTable = !tableFilter || field.table_name.toLowerCase().includes(tableFilter.toLowerCase());
-    return matchesSchema && matchesTable;
+    return matchesTable;
   });
 
-  // Get unique schema layers and tables for filters
-  const schemaLayers = [...new Set(data.map(field => field.schema_layer))];
+  // Get unique tables for filters
   const tables = [...new Set(data.map(field => field.table_name))];
 
   const handleRowClick = (field: PI20DataModelField) => {
@@ -164,7 +158,7 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
 
       {/* Filters */}
       <div className="px-6 py-4 border-b border-gray-700 bg-gray-800">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Search
@@ -178,22 +172,6 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
                 className="w-full px-3 pr-4 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white placeholder-gray-400"
               />
             </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Schema Layer
-            </label>
-            <select
-              value={schemaFilter}
-              onChange={e => setSchemaFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-700 text-white"
-            >
-              <option value="">All Schemas</option>
-              {schemaLayers.map(schema => (
-                <option key={schema} value={schema}>{schema}</option>
-              ))}
-            </select>
           </div>
           
           <div>
@@ -221,7 +199,7 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
             Showing {filteredData.length} of {data.length} fields
           </span>
           <span className="text-orange-600 font-medium">
-            {schemaLayers.length} schema layers • {tables.length} tables
+            {tables.length} tables
           </span>
         </div>
       </div>
@@ -250,7 +228,6 @@ const PI20DataModel: React.FC<PI20DataModelProps> = ({
                       )}
                       {/* Show filter icon if filtering on this column */}
                       {(
-                        (header.column.id === 'schema_layer' && schemaFilter) ||
                         (header.column.id === 'table_name' && tableFilter) ||
                         (header.column.id === 'column_name' && globalFilter)
                       ) && (

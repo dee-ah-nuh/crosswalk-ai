@@ -4,14 +4,14 @@ An intelligent, web-based solution for data column mapping and ETL validation, s
 
 Created by **Diana Valladares**
 
-## 🎯 Project Overview
+## Project Overview
 
 **CrosswalkAI** is an **Agentic Data Engineering Tool** that provides an intelligent solution for **data column mapping and ETL (Extract, Transform, Load) validation**. The system helps data engineers map source data columns to standardized target schemas, particularly the PI20 healthcare data model.
 
 ### Core Problem Solved
 The project addresses the complex challenge of **data schema mapping** - taking raw data files from various sources (clients) and mapping their columns to a standardized data model. This is critical in healthcare data engineering where data must conform to specific standards.
 
-## 🏗️ Architecture & Technology Stack
+## Architecture & Technology Stack
 
 ### Backend (Python/FastAPI)
 - **Framework**: FastAPI with async/await support
@@ -37,32 +37,32 @@ The system maintains 14+ database tables including:
 - `source_columns` - Uploaded source data analysis
 - `crosswalk_mappings` - User-defined column mappings
 
-## ✨ Key Features
+## Key Features
 
-### 🤖 Intelligent Auto-Mapping
+### Intelligent Auto-Mapping
 - **AI-Powered Suggestions**: Hybrid approach combining:
   - Fuzzy string matching for column name similarity
   - Data pattern analysis for sample values
   - Machine learning from user corrections
   - Confidence scoring for mapping suggestions
 
-### 🎨 Interactive Mapping Interface
+### Interactive Mapping Interface
 - **Dual View Modes**: Switch between card-based and table views
 - **Real-time Validation**: Immediate feedback on mapping rules
 - **Status Tracking**: Visual indicators for mapping completion
-  - ✅ **Mapped** (Green): Complete mapping with MCDM column
-  - ❌ **Incomplete** (Red): Needs MCDM column assignment
-  - 🔵 **Custom Field** (Blue): Custom business logic required
-  - ⚠️ **Under Review** (Yellow): Requires MCS review
-  - ⭕ **Skipped** (Gray): Intentionally excluded
+  - **Mapped** (Green): Complete mapping with MCDM column
+  - *Incomplete** (Red): Needs MCDM column assignment
+  - **Custom Field** (Blue): Custom business logic required
+  - **Under Review** (Yellow): Requires MCS review
+  - **Skipped** (Gray): Intentionally excluded
 
-### 📊 Data Model Management
+### Data Model Management
 - **PI20 Schema Integration**: Built-in healthcare data model with 827+ standardized fields
 - **Schema Layers**: Support for RAW, CLEANSE, and CURATED data layers
 - **Field Validation**: Automatic validation against data model rules
 - **Custom Field Support**: Define custom fields outside the standard model
 
-### 📤 Export & Integration
+### Export & Integration
 - **Multiple Export Formats**: 
   - CSV exports for documentation
   - JSON configuration files
@@ -70,7 +70,7 @@ The system maintains 14+ database tables including:
   - **Snowflake Export**: Specialized integration for Snowflake data warehouse
 - **ETL Code Generation**: Automatic generation of data transformation scripts
 
-### 📁 File Processing & Analysis
+### File Processing & Analysis
 - **Automated File Upload**: CSV/Excel file processing
 - **Data Profiling**: Automatic analysis of:
   - Column data types
@@ -78,13 +78,13 @@ The system maintains 14+ database tables including:
   - Data patterns (phone numbers, dates, IDs, etc.)
   - Statistical summaries
 
-### 🗂️ Project Management
+### Project Management
 - **Multi-Client Support**: Manage mappings for different clients
 - **Version Control**: Track different versions and streams (V00, S00, etc.)
 - **File Group Organization**: Organize related files by groups
 - **Profile Management**: Client-specific configurations and settings
 
-## 🩺 Healthcare Data Specialization
+## Healthcare Data Specialization
 
 The system includes specialized pattern recognition for healthcare data:
 - **Claim Numbers**: Various formats and validation patterns
@@ -93,7 +93,7 @@ The system includes specialized pattern recognition for healthcare data:
 - **Tax IDs**: Healthcare provider tax identification
 - **Medical Codes**: Support for various medical coding systems
 
-## 🧠 AI/Machine Learning Features
+## AI/Machine Learning Features
 
 ### Self-Learning System
 - **Correction History**: Tracks user corrections to improve future suggestions
@@ -101,7 +101,7 @@ The system includes specialized pattern recognition for healthcare data:
 - **Confidence Scoring**: Provides reliability metrics for mapping suggestions
 - **Semantic Matching**: Uses TF-IDF and cosine similarity for intelligent column matching
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.9+
@@ -197,7 +197,7 @@ The system provides comprehensive API documentation through FastAPI's automatic 
 - `POST /api/exports/csv` - Export crosswalk as CSV
 - `POST /api/snowflake/export` - Generate Snowflake deployment scripts
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 ```
@@ -230,26 +230,14 @@ CrosswalkAI/
 - **PI20DataModelGrid**: Data model browser
 - **UploadScreen**: File upload interface
 
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd backend
-python -m pytest
-
-# Frontend tests
-cd frontend
-npm test
-```
-
-## 📝 Logging
+## Logging
 
 The system includes comprehensive logging:
 - `backend.log` - Backend application logs
 - `frontend.log` - Frontend build and runtime logs
 - `CLITS.txt` - Change log and issue tracking
 
-## 🚦 Deployment
+## Deployment
 
 ### Production Deployment
 1. Build the frontend:
@@ -270,7 +258,7 @@ The system includes comprehensive logging:
 # Or manually stop the processes
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -278,11 +266,11 @@ The system includes comprehensive logging:
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is proprietary software created by Diana Valladares.
 
-## 📞 Support
+## Support
 
 For support or questions about this project, please contact Diana Valladares.
 

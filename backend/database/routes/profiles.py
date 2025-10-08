@@ -16,12 +16,19 @@ from services.file_parser import FileParser
 
 router = APIRouter()
 
-@router.post("/profiles")
+# """
+# the ... inside Form(...) means the parameter is required. 
+# If the client doesnt provide this form field in the request, 
+# FastAPI will return a validation error.
+
+# For example you cant submit a form without entering a name
+# """
 
 
 @router.post("/profiles")
 async def create_profile(
     name: str = Form(...),
+    
     client_id: str = Form(""),
     db: Session = Depends(DuckDBClient.get_duckdb)
 ):
