@@ -1,4 +1,4 @@
-name: Full Stack CI/CD Pipeline
+name: Crosswalk AI CI/CD Pipeline
 
 # Trigger on push to develop, release, or main
 on:
@@ -14,7 +14,7 @@ on:
       - develop
 
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
     
     # Define environment based on the branch being pushed to
