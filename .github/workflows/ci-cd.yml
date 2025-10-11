@@ -1,0 +1,82 @@
+name: Full Stack CI/CD Pipeline
+
+# Trigger on push to develop, release, or main
+on:
+  push:
+    branches:
+      - main
+      - release
+      - develop
+  pull_request:
+    branches:
+      - main
+      - release
+      - develop
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    
+    # Define environment based on the branch being pushed to
+    environment:
+      # Use a conditional expression to set the environment name
+      name: ${{ github.ref == 'refs/heads/main' && 'main' || github.ref == 'refs/heads/release' && 'test' || 'dev' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # --- Build Step (Common to all environments) ---
+      - name: Set up Node.js for Frontend Build (React/Vite)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Frontend Build (Install and Build Static Assets)
+        run: |
+          cd frontend
+          npm install
+          npm run build
+        # Note: The 'frontend/dist' folder now holds the static React build.
+        
+      - name: Set up Python for Backend Build (FastAPI)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Backend Build (Install Dependencies)
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          
+      # --- Data Build Step (DuckDB Tables) ---
+      - name: Build DuckDB Database Tables
+        run: |
+          # Create all required database tables using existing DDL scripts
+          python backend/database/ddl/tables/_create_all_tables.py
+          
+      # --- Automated Testing Step (CI) ---
+      - name: Run Backend Tests (Only on 'release' and 'main' branches)
+        if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/main'
+        run: |
+          # Placeholder for running tests (e.g., pytest)
+          echo "Running Python tests in backend..."
+          # cd backend && pytest
+          
+      # --- Deployment Step (CD) ---
+      - name: Deploy to Hosting Service (e.g., Render or similar)
+        # This is a generic deployment step. In a real scenario, you'd use 
+        # a dedicated GitHub Action for your chosen free cloud service (e.g., 
+        # a custom action for Render/Vercel or a simple 'curl' command).
+        # We use 'secrets' which are configured in the GitHub Environment settings.
+        run: |
+          echo "Starting deployment..."
+          # Deploy FastAPI + DuckDB backend and React frontend
+          # The entire repository (including DuckDB files) is ready for deployment
+          # Configure your hosting service (Render, Railway, etc.) to use:
+          # Start command: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+          
+        env:
+          # Environment-specific secrets for deployment
+          DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
+          HOSTING_URL: ${{ secrets.HOSTING_URL }}

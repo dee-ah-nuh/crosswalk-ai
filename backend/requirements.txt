@@ -10,3 +10,5 @@ python-Levenshtein==0.27.1
 scikit-learn
 duckdb==0.10.2
 duckdb-engine==0.7.3
+mcp
+fastmcp

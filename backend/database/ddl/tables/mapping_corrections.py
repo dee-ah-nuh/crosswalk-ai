@@ -22,8 +22,8 @@ def create_mapping_corrections_table(db_path=':memory:', sql_ddl=None):
         print("mapping_corrections table created from provided SQL DDL.")
     return con
 
-if __name__ == "__main__":
-    db_path = os.getenv("DUCKDB_PATH", ":memory:")
-    con = create_mapping_corrections_table(db_path=db_path)
-    print("mapping_corrections table created in DuckDB database at:", db_path)
-    con.close()
+# if __name__ == "__main__":
+#     db_path = os.getenv("DUCKDB_PATH", ":memory:")
+#     con = create_mapping_corrections_table(db_path=db_path)
+#     print("mapping_corrections table created in DuckDB database at:", db_path)
+#     con.close()

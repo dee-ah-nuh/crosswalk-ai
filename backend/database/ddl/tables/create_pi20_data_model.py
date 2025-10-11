@@ -40,15 +40,15 @@ def create_data_model(db_path=':memory:', sql_ddl=None):
         print("Data model created from provided SQL DDL.")
     return con
 
-if __name__ == "__main__":
-    con = create_data_model(db_path=db_path)
-    insert_pi20_data_model_from_csv(con, pi20_data_model_csv)
-    print("PI20 Data Model loaded into DuckDB.")
+# if __name__ == "__main__":
+#     con = create_data_model(db_path=db_path)
+#     insert_pi20_data_model_from_csv(con, pi20_data_model_csv)
+#     print("PI20 Data Model loaded into DuckDB.")
 
 
-    result = con.execute("SELECT IN_CROSSWALK, TABLE_NAME FROM pi20_data_model LIMIT 1;").fetchall()
-    for row in result:
-        print(row)
-    con.close()
+#     result = con.execute("SELECT IN_CROSSWALK, TABLE_NAME FROM pi20_data_model LIMIT 1;").fetchall()
+#     for row in result:
+#         print(row)
+#     con.close()
 
 

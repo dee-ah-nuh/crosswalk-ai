@@ -29,9 +29,9 @@ def create_source_profiles_table(db_path=':memory:', sql_ddl=None):
         print("source_profiles table created from provided SQL DDL.")
     return con
 
-if __name__ == "__main__":
-    db_path = os.getenv("DUCKDB_PATH", ":memory:")
-    con = create_source_profiles_table(db_path=db_path)
-    print("source_profiles table created in DuckDB database at:", db_path)
-    con.close()
+# if __name__ == "__main__":
+#     db_path = os.getenv("DUCKDB_PATH", ":memory:")
+#     con = create_source_profiles_table(db_path=db_path)
+#     print("source_profiles table created in DuckDB database at:", db_path)
+#     con.close()
     

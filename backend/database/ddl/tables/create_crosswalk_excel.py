@@ -66,10 +66,10 @@ def create_crosswalk_template_excel_table(db_path=':memory:', sql_ddl=None):
         print("Crosswalk template table created from provided SQL DDL.")
     return con
 
-if __name__ == "__main__":
-    con = create_crosswalk_template_excel_table(db_path=duckdb_path)
-    con.execute("SELECT * FROM crosswalk_template LIMIT 5;")
-    result = con.fetchall()
-    print(result)
-    print("Crosswalk template table created in DuckDB database at:", duckdb_path)
-    con.close()
+# if __name__ == "__main__":
+#     con = create_crosswalk_template_excel_table(db_path=duckdb_path)
+#     con.execute("SELECT * FROM crosswalk_template LIMIT 5;")
+#     result = con.fetchall()
+#     print(result)
+#     print("Crosswalk template table created in DuckDB database at:", duckdb_path)
+#     con.close()
