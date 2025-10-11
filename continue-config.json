@@ -1,0 +1,82 @@
+{
+  "models": [
+    {
+      "title": "Llama 3.2 3B (Local - M4 Optimized)",
+      "provider": "ollama",
+      "model": "llama3.2:3b"
+    }
+  ],
+  "contextProviders": [
+    {
+      "name": "code",
+      "params": {}
+    },
+    {
+      "name": "docs",
+      "params": {}
+    },
+    {
+      "name": "diff",
+      "params": {}
+    },
+    {
+      "name": "terminal",
+      "params": {}  
+    },
+    {
+      "name": "problems",
+      "params": {}
+    },
+    {
+      "name": "folder",
+      "params": {}
+    },
+    {
+      "name": "codebase",
+      "params": {}
+    }
+  ],
+  "slashCommands": [
+    {
+      "name": "edit",
+      "description": "Edit code in a file"
+    },
+    {
+      "name": "comment", 
+      "description": "Write comments for code"
+    },
+    {
+      "name": "share",
+      "description": "Download and share this session"
+    },
+    {
+      "name": "cmd",
+      "description": "Run a shell command"
+    },
+    {
+      "name": "commit",
+      "description": "Generate a git commit message"
+    }
+  ],
+  "customCommands": [
+    {
+      "name": "crosswalk-mapping",
+      "prompt": "Help me create healthcare data mappings using the CrosswalkAI MCP server. Use the available tools to:\n1. Search PI20 fields for relevant matches\n2. Create intelligent mappings for my columns\n3. Provide confidence scores and explanations\n\nAvailable MCP tools:\n- search_pi20_fields(search_term, limit)\n- map_columns_intelligent(columns)\n- list_pi20_tables()\n\nResource: crosswalk://pi20-fields",
+      "description": "Get help with healthcare data crosswalk mappings"
+    }
+  ],
+  "mcpServers": {
+    "crosswalk-ai": {
+      "command": "python",
+      "args": ["/Users/deeahnuh/Documents/Repos/CrosswalkAI/simple_mcp_test.py"],
+      "cwd": "/Users/deeahnuh/Documents/Repos/CrosswalkAI",
+      "env": {
+        "PATH": "/Users/deeahnuh/Documents/Repos/CrosswalkAI/.mcp/bin:/usr/local/bin:/usr/bin:/bin"
+      }
+    }
+  },
+  "allowAnonymousTelemetry": false,
+  "embeddingsProvider": {
+    "provider": "transformers.js"
+  }
+}

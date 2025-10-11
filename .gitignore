@@ -1,6 +1,7 @@
 node_modules
 crosswalk
 crosswalksource/
+.mcp/
 
 # Build artifacts
 frontend/dist/
@@ -9,6 +10,12 @@ frontend/dist/
 *.log
 backend.log
 frontend.log
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
 # System files
 .DS_Store
