@@ -4,10 +4,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-DB_PATH = os.getenv("DUCKDB_PATH")
-con = duckdb.connect(DB_PATH)
-
-
+# DDL definition (no connection here - connection happens in the function)
 source_profiles_ddl = """
 CREATE TABLE IF NOT EXISTS source_profiles (
     id INTEGER PRIMARY KEY,
