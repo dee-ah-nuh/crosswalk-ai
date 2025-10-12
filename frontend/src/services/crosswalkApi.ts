@@ -242,19 +242,49 @@ class CrosswalkApiService {
     table_name: string;
     created_by?: string;
   }): Promise<{sql_content: string; table_name: string; export_type: string; mapping_count: number}> {
-    const response = await fetch(`/api/snowflake/generate-sql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(exportData),
-    });
+    console.log('Starting Snowflake SQL generation request');
+    console.log('Export data:', JSON.stringify(exportData, null, 2));
     
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    try {
+      const response = await fetch(`/api/snowflake/generate-sql`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(exportData),
+      });
+      
+      console.log('API Response status:', response.status, response.statusText);
+      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Snowflake SQL generation failed:');
+        console.error('   Status:', response.status, response.statusText);
+        console.error('   Error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Snowflake SQL generation successful');
+      console.log('Result summary:', {
+        table_name: result.table_name,
+        export_type: result.export_type,
+        mapping_count: result.mapping_count,
+        sql_length: result.sql_content ? result.sql_content.length : 0
+      });
+      
+      return result;
+      
+    } catch (error) {
+      console.error('Exception in generateSnowflakeSQL:', error);
+      console.error('Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
     }
-    
-    return response.json();
   }
 
   async getSnowflakeExports(client_id?: string): Promise<any[]> {

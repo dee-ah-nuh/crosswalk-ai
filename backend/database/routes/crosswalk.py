@@ -7,8 +7,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, func
 from typing import List, Dict, Any, Optional
 import json
+import logging
+import traceback
 
 from database.duckdb_cxn import DuckDBClient
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -22,60 +27,110 @@ async def get_crosswalk_data(
 ):
     """Get crosswalk template data with filtering"""
     
-    # Build base query
-    query = """
-        SELECT 
-            client_id, source_column_order, source_column_name, file_group_name,
-            mcdm_column_name, in_model, mcdm_table, custom_field_type,
-            data_profile_info, profile_column_2, profile_column_3, profile_column_4,
-            profile_column_5, profile_column_6, source_column_formatting, skipped_flag,
-            additional_field_1, additional_field_2, additional_field_3, additional_field_4,
-            additional_field_5, additional_field_6, additional_field_7, additional_field_8,
-            created_at, updated_at
-        FROM crosswalk_template
-        WHERE 1=1
-    """
-    params = {}
-    
-    if client_id:
-        query += " AND client_id = :client_id"
-        params['client_id'] = client_id
-    
-    if file_group:
-        query += " AND file_group_name = :file_group"
-        params['file_group'] = file_group
-    
-    query += " ORDER BY source_column_order, source_column_name"
-    query += " LIMIT :limit OFFSET :offset"
-    params['limit'] = limit
-    params['offset'] = offset
-    
-    result = db.execute(text(query), params).fetchall()
-    
-    # Convert to list of dictionaries
-    columns = [
-        'id', 'client_id', 'source_column_order', 'source_column_name', 'file_group_name',
-        'mcdm_column_name', 'in_model', 'mcdm_table', 'custom_field_type',
-        'data_profile_info', 'profile_column_2', 'profile_column_3', 'profile_column_4',
-        'profile_column_5', 'profile_column_6', 'source_column_formatting', 'skipped_flag',
-        'additional_field_1', 'additional_field_2', 'additional_field_3', 'additional_field_4',
-        'additional_field_5', 'additional_field_6', 'additional_field_7', 'additional_field_8',
-        'created_at', 'updated_at'
-    ]
-    
-    data = []
-    for row in result:
-        row_dict = {}
-        for i, col in enumerate(columns):
-            row_dict[col] = row[i]
-        data.append(row_dict)
-    
-    return {
-        "data": data,
-        "total": len(data),
-        "offset": offset,
-        "limit": limit
-    }
+    try:
+        logger.info(f"Starting crosswalk query with params: client_id={client_id}, file_group={file_group}, limit={limit}, offset={offset}")
+        
+        # Build base query - select all columns from the table
+        query = """
+            SELECT 
+                id, client_id, source_column_order, source_column_name, file_group_name,
+                mcdm_column_name, in_model, mcdm_table, custom_field_type,
+                data_profile_info, profile_column_2, profile_column_3, profile_column_4,
+                profile_column_5, profile_column_6, source_column_formatting, skipped_flag,
+                additional_field_1, additional_field_2, additional_field_3, additional_field_4,
+                additional_field_5, additional_field_6, additional_field_7, additional_field_8,
+                target_tables, provider_file_group, is_multi_table, crosswalk_version,
+                parent_mapping_id, reuse_from_client, version_notes, inferred_data_type,
+                custom_data_type, data_type_source, source_file_name, join_key_column,
+                join_table, join_type, mcs_review_required, mcs_review_notes,
+                mcs_review_status, mcs_reviewer, mcs_review_date, complexity_score,
+                business_priority, completion_status, created_at, updated_at
+            FROM crosswalk_template
+            WHERE 1=1
+        """
+        params = {}
+        
+        if client_id:
+            query += " AND client_id = :client_id"
+            params['client_id'] = client_id
+        
+        if file_group:
+            query += " AND file_group_name = :file_group"
+            params['file_group'] = file_group
+        
+        query += " ORDER BY source_column_order, source_column_name"
+        query += " LIMIT :limit OFFSET :offset"
+        params['limit'] = limit
+        params['offset'] = offset
+        
+        logger.info(f"Executing query: {query}")
+        logger.info(f"Query parameters: {params}")
+        
+        result = db.execute(text(query), params).fetchall()
+        logger.info(f"Query returned {len(result)} rows")
+        
+        # Convert to list of dictionaries - all columns from the table
+        columns = [
+            'id', 'client_id', 'source_column_order', 'source_column_name', 'file_group_name',
+            'mcdm_column_name', 'in_model', 'mcdm_table', 'custom_field_type',
+            'data_profile_info', 'profile_column_2', 'profile_column_3', 'profile_column_4',
+            'profile_column_5', 'profile_column_6', 'source_column_formatting', 'skipped_flag',
+            'additional_field_1', 'additional_field_2', 'additional_field_3', 'additional_field_4',
+            'additional_field_5', 'additional_field_6', 'additional_field_7', 'additional_field_8',
+            'target_tables', 'provider_file_group', 'is_multi_table', 'crosswalk_version',
+            'parent_mapping_id', 'reuse_from_client', 'version_notes', 'inferred_data_type',
+            'custom_data_type', 'data_type_source', 'source_file_name', 'join_key_column',
+            'join_table', 'join_type', 'mcs_review_required', 'mcs_review_notes',
+            'mcs_review_status', 'mcs_reviewer', 'mcs_review_date', 'complexity_score',
+            'business_priority', 'completion_status', 'created_at', 'updated_at'
+        ]
+        
+        logger.info(f"Expected columns count: {len(columns)}")
+        
+        data = []
+        for i, row in enumerate(result):
+            try:
+                logger.debug(f"Processing row {i}: type={type(row)}, has_asdict={hasattr(row, '_asdict')}, has_mapping={hasattr(row, '_mapping')}")
+                
+                # Log the actual row structure for debugging
+                if hasattr(row, '__len__'):
+                    logger.debug(f"Row {i} length: {len(row)}")
+                
+                # Convert SQLAlchemy row to dict using _asdict() method
+                # This is safer than manual indexing and handles column mismatches
+                if hasattr(row, '_asdict'):
+                    row_dict = row._asdict()
+                    logger.debug(f"Row {i} converted using _asdict(): {len(row_dict)} fields")
+                else:
+                    # Fallback: convert to dict using column names from the result
+                    if hasattr(row, '_mapping'):
+                        row_dict = dict(row._mapping)
+                        logger.debug(f"Row {i} converted using _mapping: {len(row_dict)} fields")
+                    else:
+                        row_dict = dict(row)
+                        logger.debug(f"Row {i} converted using dict(): {len(row_dict)} fields")
+                
+                data.append(row_dict)
+                
+            except Exception as row_error:
+                logger.error(f"Error processing row {i}: {str(row_error)}")
+                logger.error(f"Row {i} details: type={type(row)}")
+                logger.error(f"Row {i} traceback: {traceback.format_exc()}")
+                raise row_error
+        
+        logger.info(f"Successfully processed {len(data)} rows")
+        
+        return {
+            "data": data,
+            "total": len(data),
+            "offset": offset,
+            "limit": limit
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in get_crosswalk_data: {str(e)}")
+        logger.error(f"Full traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.post("/crosswalk/{mapping_id}/duplicate")
 async def duplicate_crosswalk_mapping(
