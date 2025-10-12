@@ -34,10 +34,17 @@ async def generate_snowflake_sql(
 ):
     """Generate Snowflake SQL based on crosswalk mappings"""
     
+    print(f"Starting Snowflake SQL generation for client: {export_request.client_id}")
+    print(f"Export request: {export_request}")
+    print(f"EXACT export_type received: '{export_request.export_type}' (type: {type(export_request.export_type)})")
+    print(f"Length of export_type: {len(export_request.export_type)}")
+    print(f"export_type repr: {repr(export_request.export_type)}")
+    
     try:
         # Get crosswalk mappings
         query = """
-            SELECT ct.*, dm.data_type as model_data_type
+            SELECT ct.*,
+            dm.column_type as model_data_type
             FROM crosswalk_template ct
             LEFT JOIN pi20_data_model dm ON ct.mcdm_column_name = dm.column_name
             WHERE ct.client_id = :client_id
@@ -48,51 +55,93 @@ async def generate_snowflake_sql(
             query += " AND ct.file_group_name = :file_group"
             params['file_group'] = export_request.file_group
         
-        query += " AND ct.completion_status IN ('READY', 'VALIDATED') ORDER BY ct.source_column_order"
+        # Remove the restrictive completion_status filter for now - include all non-skipped records
+        query += " AND (ct.skipped_flag IS NULL OR ct.skipped_flag = FALSE) ORDER BY ct.source_column_order"
+        
+        print(f"Executing query: {query}")
+        print(f"Query parameters: {params}")
         
         mappings = db.execute(text(query), params).fetchall()
+        print(f"Found {len(mappings)} mappings")
         
         if not mappings:
-            raise HTTPException(status_code=404, detail="No ready mappings found")
+            error_msg = f"No mappings found for client_id='{export_request.client_id}'"
+            if export_request.file_group:
+                error_msg += f" and file_group='{export_request.file_group}'"
+            print(f"Error: {error_msg}")
+            raise HTTPException(status_code=404, detail=error_msg)
+        
+        print(f"Generating SQL for export_type: {export_request.export_type}")
         
         # Generate SQL based on export type
+        print(f"Checking if '{export_request.export_type}' == 'CREATE_TABLE': {export_request.export_type == 'CREATE_TABLE'}")
+        print(f"Checking if '{export_request.export_type}' == 'INSERT_MAPPING': {export_request.export_type == 'INSERT_MAPPING'}")
+        print(f"Checking if '{export_request.export_type}' == 'FULL_ETL': {export_request.export_type == 'FULL_ETL'}")
+        
         if export_request.export_type == "CREATE_TABLE":
+            print("✅ MATCHED CREATE_TABLE - Calling generate_create_table_sql function")
             sql_content = generate_create_table_sql(mappings, export_request.table_name)
+            print(f"CREATE_TABLE SQL generated, starts with: {sql_content[:100]}...")
         elif export_request.export_type == "INSERT_MAPPING":
+            print("✅ MATCHED INSERT_MAPPING - Calling generate_insert_mapping_sql function")
             sql_content = generate_insert_mapping_sql(mappings, export_request.table_name)
+            print(f"INSERT_MAPPING SQL generated, starts with: {sql_content[:100]}...")
         elif export_request.export_type == "FULL_ETL":
+            print("✅ MATCHED FULL_ETL - Calling generate_full_etl_sql function")
             sql_content = generate_full_etl_sql(mappings, export_request.table_name, export_request.client_id)
+            print(f"FULL_ETL SQL generated, starts with: {sql_content[:100]}...")
         else:
-            raise HTTPException(status_code=400, detail="Invalid export type")
+            print(f"❌ NO MATCH - Invalid export type: '{export_request.export_type}'")
+            raise HTTPException(status_code=400, detail=f"Invalid export type: {export_request.export_type}")
+        
+        print(f"Generated SQL content length: {len(sql_content)} characters")
         
         # Save export to database
-        db.execute(text("""
-            INSERT INTO snowflake_sql_exports 
-            (client_id, file_group, export_type, sql_content, table_name, created_by)
-            VALUES (:client_id, :file_group, :export_type, :sql_content, :table_name, :created_by)
-        """), {
-            'client_id': export_request.client_id,
-            'file_group': export_request.file_group,
-            'export_type': export_request.export_type,
-            'sql_content': sql_content,
-            'table_name': export_request.table_name,
-            'created_by': export_request.created_by or 'SYSTEM'
-        })
+        try:
+            db.execute(text("""
+                INSERT INTO snowflake_sql_exports 
+                (client_id, file_group, export_type, sql_content, table_name, created_by)
+                VALUES (:client_id, :file_group, :export_type, :sql_content, :table_name, :created_by)
+            """), {
+                'client_id': export_request.client_id,
+                'file_group': export_request.file_group,
+                'export_type': export_request.export_type,
+                'sql_content': sql_content,
+                'table_name': export_request.table_name,
+                'created_by': export_request.created_by or 'SYSTEM'
+            })
+            
+            db.commit()
+            print("Successfully saved export to database")
+            
+        except Exception as save_error:
+            print(f"Warning: Failed to save export to database: {save_error}")
+            # Continue anyway - the main functionality (SQL generation) worked
         
-        db.commit()
-        
-        return {
+        result = {
             'sql_content': sql_content,
             'table_name': export_request.table_name,
             'export_type': export_request.export_type,
             'mapping_count': len(mappings)
         }
         
+        print(f"Snowflake SQL generation completed successfully")
+        return result
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
+        print(f"Error in generate_snowflake_sql: {str(e)}")
+        print(f"Exception type: {type(e).__name__}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 def generate_create_table_sql(mappings, table_name):
     """Generate CREATE TABLE SQL for Snowflake"""
+    
+    print(f"generate_create_table_sql called with {len(mappings)} mappings for table: {table_name}")
     
     sql_lines = [
         f"-- Snowflake CREATE TABLE generated from crosswalk mappings",
@@ -103,12 +152,16 @@ def generate_create_table_sql(mappings, table_name):
     
     column_definitions = []
     
-    for mapping in mappings:
+    for i, mapping in enumerate(mappings):
+        print(f"Processing mapping {i}: mcdm_column_name='{mapping.mcdm_column_name}', skipped_flag={mapping.skipped_flag}")
+        
         if not mapping.mcdm_column_name or mapping.skipped_flag:
+            print(f"Skipping mapping {i}: missing column name or skipped")
             continue
             
         # Determine data type
         data_type = mapping.custom_data_type or mapping.inferred_data_type or mapping.model_data_type or "VARCHAR(255)"
+        print(f"Data type for {mapping.mcdm_column_name}: {data_type}")
         
         # Map to Snowflake types
         if "VARCHAR" in data_type.upper():
@@ -137,6 +190,12 @@ def generate_create_table_sql(mappings, table_name):
         
         column_definitions.append(column_def)
     
+    print(f"Generated {len(column_definitions)} column definitions")
+    
+    if not column_definitions:
+        print("WARNING: No valid column definitions found!")
+        return f"-- No valid columns found for table {table_name}"
+    
     # Join columns with commas
     sql_lines.extend([",\n".join(column_definitions)])
     sql_lines.append(");")
@@ -148,7 +207,9 @@ def generate_create_table_sql(mappings, table_name):
         ""
     ])
     
-    return "\n".join(sql_lines)
+    final_sql = "\n".join(sql_lines)
+    print(f"Final CREATE TABLE SQL length: {len(final_sql)} characters")
+    return final_sql
 
 def generate_insert_mapping_sql(mappings, table_name):
     """Generate INSERT VALUES exactly matching the Excel formula logic for crosswalk configuration"""
