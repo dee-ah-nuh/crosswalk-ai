@@ -387,7 +387,7 @@ npm run build
 4. Add tests if applicable
 5. Submit a pull request
 
-# **How Crosswalk AI is different — the precise gaps you can own**
+# **How Crosswalk AI is different**
 
 1. **Arbitrary-source → target star-model mapping as first-class**
     - Competitors handle structured connectors or wrangling; very few accept an arbitrary CSV + a user-supplied *target star schema* and run *semantic* AI matching to populate a model automatically. Crosswalk AI’s core product is *schema reconciliation + mapping suggestions* for business-defined star schemas (fact + dim).
